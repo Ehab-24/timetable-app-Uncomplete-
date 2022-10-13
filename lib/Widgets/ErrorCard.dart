@@ -44,7 +44,7 @@ class ErrorCard extends StatelessWidget {
 
                 const Center(
                   child: Text(
-                    'Error!',
+                    'Error Occured! once again',
                     style: TextStyle(
                       color: Color.fromRGBO(84, 110, 122, 1),
                       fontSize: 28,
