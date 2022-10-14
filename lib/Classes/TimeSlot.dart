@@ -53,10 +53,10 @@ class TimeSlot{
   => ((endTime.hour - startTime.hour)
       + (endTime.minute - startTime.minute) / 60);
 
-  static TimeSlot zero(int parentId){
+  static TimeSlot zero(int parentId, int day){
     
     return TimeSlot(
-      day: 0,
+      day: day,
       venue:'',
       title: 'Title',
       subtitle: '',

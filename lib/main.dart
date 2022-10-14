@@ -31,7 +31,7 @@ Future main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => Table_pr(timeTables)),
         ChangeNotifierProvider(create: (_) => Screen_pr()),
-        ChangeNotifierProvider(create: (_) => Day_pr(0)),
+        ChangeNotifierProvider(create: (_) => Day_pr(DateTime.now().weekday - 1)),
       ],
       child: const App(),
     )

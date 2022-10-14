@@ -44,7 +44,7 @@ class ErrorCard extends StatelessWidget {
 
                 const Center(
                   child: Text(
-                    'Error Occured! once again',
+                    'Error!',
                     style: TextStyle(
                       color: Color.fromRGBO(84, 110, 122, 1),
                       fontSize: 28,
@@ -72,8 +72,7 @@ class ErrorCard extends StatelessWidget {
                     Navigator.of(context).pop();
                   },
                   style: OutlinedButton.styleFrom(
-                    primary: Colors.cyan,
-                    side: const BorderSide(color: Colors.cyan),
+                    // foregroundColor: Colors.cyan, side: const BorderSide(color: Colors.cyan),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6)
                     )

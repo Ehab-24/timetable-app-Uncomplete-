@@ -4,10 +4,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Classes/FocusedMenuItem.dart';
 import 'package:timetable_app/Globals/Utils.dart';
 import 'package:timetable_app/Globals/enums.dart';
+import 'package:timetable_app/Screens/Schedule/ScheduleScreen.dart';
 
 import '../Classes/TimeSlot.dart';
 import '../Classes/TimeTable.dart';
@@ -30,6 +32,7 @@ class TimeTableWidget extends StatelessWidget {
 
     final double w = Utils.screenWidthPercentage(context, 1);
     final double h = Utils.screenHeightPercentage(context, 1);
+    final Day_pr dayWatch = context.watch<Day_pr>();
 
     return SafeArea(
       child: Scaffold(
@@ -43,7 +46,7 @@ class TimeTableWidget extends StatelessWidget {
           child: FloatingActionButton(
             mini: true,
             onPressed: (){
-              Utils.showEditDialog(context, TimeSlot.zero(timeTable.id!), color: Colors.pink, isfirst: true);
+              Utils.showEditDialog(context, TimeSlot.zero(timeTable.id!, dayWatch.selectedDay), color: Colors.pink, isfirst: true);
             },
             child: Icon(Icons.add, color: Colors.blueGrey.shade800,),
           ),
@@ -99,6 +102,7 @@ class _TimeTablePageBodyState extends State<TimeTablePageBody> {
     final Day_pr dayWatch = context.watch<Day_pr>();
     final double h = Utils.screenHeightPercentage(context, 1);
     final double w = Utils.screenWidthPercentage(context, 1);
+    final int noOfDays = widget.timeTable.timeSlots[dayWatch.selectedDay].length;
 
     return Column(
 
@@ -145,58 +149,62 @@ class _TimeTablePageBodyState extends State<TimeTablePageBody> {
                       IconButton(
                         splashRadius: 24,
                         onPressed: (){
+                          dayReader.setDay(DateTime.now().weekday - 1);
                           Navigator.of(context).pop();
                         }, 
                         icon: const Icon(Icons.arrow_back, color: Colors.white,)
                       ),
       
-                      FocusedMenuHolder(
-      
-                        menuWidth: 170,
-                        menuOffset: 12,
-                        onPressed: (){},
-                        openWithTap: true,
-      
-                        menuItems: [
-      
-                          focusedMenuItem(
-                            onPressed: (){}, 
-                            item: focusedMenuItems[0],
-                          ),
-                          focusedMenuItem(
-                            onPressed: (){}, 
-                            item: focusedMenuItems[1],
-                          ),
-                          focusedMenuItem(
-                            onPressed: (){}, 
-                            item: focusedMenuItems[2],
-                          ),
-                          focusedMenuItem(
-                            onPressed: (){
-                              Utils.showDeleteTableDialog(context, widget.timeTable);
-                            }, 
-                            item: focusedMenuItems[3],
-                          ),
-                          focusedMenuItem(
-                            onPressed: (){}, 
-                            item: focusedMenuItems[4],
-                          ),
-                          focusedMenuItem(
-                            onPressed: (){}, 
-                            item: focusedMenuItems[5],
-                          ),
-                          focusedMenuItem(
-                            onPressed: (){
-                              Utils.showEditDialog(context, TimeSlot.zero(widget.timeTable.id!), color: Colors.pink, isfirst: true);
-                            }, 
-                            item: focusedMenuItems[6],
-                          ),
-                        ],
-      
-                        child: const Icon(
-                          Icons.more_vert, 
-                          color: Colors.white, size: 30,
-                        )
+                      Material(
+                        type: MaterialType.transparency,
+                        child: FocusedMenuHolder(
+                            
+                          menuWidth: 170,
+                          menuOffset: 12,
+                          onPressed: (){},
+                          openWithTap: true,
+                            
+                          menuItems: [
+                            
+                            focusedMenuItem(
+                              onPressed: (){}, 
+                              item: focusedMenuItems[0],
+                            ),
+                            focusedMenuItem(
+                              onPressed: (){}, 
+                              item: focusedMenuItems[1],
+                            ),
+                            focusedMenuItem(
+                              onPressed: (){}, 
+                              item: focusedMenuItems[2],
+                            ),
+                            focusedMenuItem(
+                              onPressed: (){
+                                Utils.showDeleteTableDialog(context, widget.timeTable);
+                              }, 
+                              item: focusedMenuItems[3],
+                            ),
+                            focusedMenuItem(
+                              onPressed: (){}, 
+                              item: focusedMenuItems[4],
+                            ),
+                            focusedMenuItem(
+                              onPressed: (){}, 
+                              item: focusedMenuItems[5],
+                            ),
+                            focusedMenuItem(
+                              onPressed: (){
+                                Utils.showEditDialog(context, TimeSlot.zero(widget.timeTable.id!, dayWatch.selectedDay), color: Colors.pink, isfirst: true);
+                              }, 
+                              item: focusedMenuItems[6],
+                            ),
+                          ],
+                            
+                          child: const Icon(
+                            Icons.more_vert, 
+                            color: Colors.white, size: 30,
+                          )
+                        ),
                       ),
                     ],
                   ),
@@ -245,40 +253,20 @@ class _TimeTablePageBodyState extends State<TimeTablePageBody> {
               Expanded(
                 child: ListView.builder(
                   shrinkWrap: true,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: widget.timeTable.timeSlots[dayWatch.selectedDay].length,
+                  // physics: const BouncingScrollPhysics(),
+                  itemCount: noOfDays + 1,
                   itemBuilder: ((context, index) {
 
                     bool beginAnimation = ticker > index + 2;
 
-                    return AnimatedPadding(
-
-                      duration: Durations.d300,
-                      curve: Curves.decelerate,
-
-                      padding: EdgeInsets.only(
-                        left: beginAnimation
-                        ? widget.w * 0.07: widget.w * 0.02,
-                        right: beginAnimation
-                        ? widget.w * 0.05: widget.w * 0.1,
-                        top: widget.h * 0.05
-                      ),
-
-                      child: AnimatedOpacity(
-                      
-                        duration: beginAnimation
-                        ? Durations.d300
-                        : const Duration(seconds: 0),
-                      
-                        curve: Curves.easeInOut,
-                        opacity: beginAnimation? 1: 0,
-                      
-                        child: TimeSlotTile(
-                          timeSlot: widget.timeTable.timeSlots[dayWatch.selectedDay][index], 
-                          color: Colors.pink,
-                        ),
-                      ),
-                    );}
+                    return index == noOfDays
+                    ? Spaces.vertical60
+                    : AnimatedTimeSlotTile(
+                      beginAnimation: beginAnimation, 
+                      timeSlot: widget.timeTable.timeSlots[dayWatch.selectedDay][index],
+                    );
+                    // return OpacityContainer(beginAnimate: beginAnimation, color: Colors.purple);
+                    }
                   )
                 ),
               ),
@@ -294,7 +282,6 @@ class _TimeTablePageBodyState extends State<TimeTablePageBody> {
       title: Text(item.title),
       trailingIcon: item.icon, 
       onPressed: onPressed,
-      backgroundColor: Colors.transparent,
     );
   }
 }

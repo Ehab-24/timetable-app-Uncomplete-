@@ -266,6 +266,7 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
                               onPressed: (){
                                 Navigator.of(context).push(
                                   showPicker(
+                                    accentColor: widget.color,
                                     value: widget.timeSlot.endTime, 
                                     displayHeader: false,
                                     onChange: (newValue){
