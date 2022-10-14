@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:timetable_app/Globals/Decorations.dart';
+import 'package:timetable_app/Globals/Styles.dart';
 import '../Globals/Utils.dart';
 
 class ErrorCard extends StatelessWidget {
@@ -28,10 +30,7 @@ class ErrorCard extends StatelessWidget {
             
             padding: const EdgeInsets.fromLTRB(16, 32, 16, 12),
           
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(6),
-            ),
+            decoration: Decorations.popUpCard,
             
             child: Column(
           
@@ -45,11 +44,7 @@ class ErrorCard extends StatelessWidget {
                 const Center(
                   child: Text(
                     'Error!',
-                    style: TextStyle(
-                      color: Color.fromRGBO(84, 110, 122, 1),
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700
-                    ),
+                    style: TextStyles.h1
                   ),
                 ),
 
@@ -71,12 +66,7 @@ class ErrorCard extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  style: OutlinedButton.styleFrom(
-                    // foregroundColor: Colors.cyan, side: const BorderSide(color: Colors.cyan),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6)
-                    )
-                  ),
+                  style: ButtonStyles.closeButton,
                   child: const Text(
                     'Close',
                   ),

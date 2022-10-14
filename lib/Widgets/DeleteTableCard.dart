@@ -8,7 +8,7 @@ import '../Globals/Providers.dart';
 import '../Globals/Styles.dart';
 import '../Globals/Utils.dart';
 
-class DeleteTableCard extends StatefulWidget {
+class DeleteTableCard extends StatelessWidget {
   const DeleteTableCard({
     Key? key,
     required this.timeTable,
@@ -17,24 +17,8 @@ class DeleteTableCard extends StatefulWidget {
   final TimeTable timeTable;
 
   @override
-  State<DeleteTableCard> createState() => _DeleteTableCardState();
-}
-
-class _DeleteTableCardState extends State<DeleteTableCard>{
-
-  late Table_pr tableReader;
-
-  @override
-  void initState() {
-    tableReader = Provider.of<Table_pr>(context, listen: false);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     
-    String title = widget.timeTable.title;
-
     return Dialog(
 
       backgroundColor: Colors.transparent,
@@ -64,52 +48,23 @@ class _DeleteTableCardState extends State<DeleteTableCard>{
 
                 const SizedBox(height: 40,),
 
-                const Text(
+                Text(
                   'Item will be deleted permnently',
-                  style: TextStyles.body4,
+                  style: TextStyles.b4(),
                   textAlign: TextAlign.center,
                 ),
 
                 const SizedBox(height: 20,),
               
                 Text(
-                  'Do you want to delete table: "$title"?',
-                  style: TextStyles.body1,
+                  'Do you want to delete table: "${timeTable.title}"?',
+                  style: TextStyles.b1,
                   textAlign: TextAlign.center,
                 ),
 
                 const SizedBox(height: 40,),
             
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    
-                    ElevatedButton(
-                      onPressed: () {
-                        tableReader.removeTable(widget.timeTable);
-                        LocalDatabase.instance.deleteTimeTable(widget.timeTable.id!);
-
-                        Navigator.of(context).pop();
-                        
-                        Utils.showSnackBar(context, 'Deleted table: "$title"', seconds: 2);
-                      }, 
-                      child: const Text(
-                        'Yes',
-                      ),
-                    ),
-                    
-                    const SizedBox(width: 40),
-                    
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      }, 
-                      child: const Text(
-                        'No',
-                      ),
-                    ),
-                  ],
-                )
+                _Actions(timeTable: timeTable)
               ],
             ),
           ),
@@ -126,6 +81,64 @@ class _DeleteTableCardState extends State<DeleteTableCard>{
           )
         ],
       ),
+    );
+  }
+}
+
+class _Actions extends StatefulWidget {
+  const _Actions({
+    Key? key,
+    required this.timeTable,
+  }) : super(key: key);
+
+  final TimeTable timeTable;
+
+  @override
+  State<_Actions> createState() => _ActionsState();
+}
+
+class _ActionsState extends State<_Actions> {
+
+  late final Table_pr tableReader;
+
+  @override
+  void initState() {
+    tableReader = context.read<Table_pr>();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        
+        ElevatedButton(
+          onPressed: () {
+            tableReader.removeTable(widget.timeTable);
+            LocalDatabase.instance.deleteTimeTable(widget.timeTable.id!);
+
+            Navigator.of(context).pop();
+            
+            Utils.showSnackBar(context, 'Deleted table: "${widget.timeTable.title}"', seconds: 2);
+          }, 
+          child: const Text(
+            'Yes',
+          ),
+        ),
+        
+        const SizedBox(width: 40),
+        
+        OutlinedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          style: ButtonStyles.closeButton,
+          child: const Text(
+            'No',
+          ),
+        ),
+      ],
     );
   }
 }

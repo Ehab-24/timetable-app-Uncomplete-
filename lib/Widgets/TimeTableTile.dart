@@ -81,16 +81,11 @@ class TimeTableTile extends StatelessWidget{
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-      
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: workLoadBarHeaders(),
-                          ),
+                          _WorkLoadBarHeaders(),
+
                           Spaces.horizontal20,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: buildWorkLoadBars(w),
-                          ),
+                          
+                          _WorkLoadBars(table: table)
                       ],)
                     ],
                   ),
@@ -108,10 +103,33 @@ class TimeTableTile extends StatelessWidget{
       ),
     );
   }
+}
 
-  Widget buildWorkLoadBar(double w, int day) {
-    
-    double hours = table.dayLoad(day);
+class _WorkLoadBars extends StatelessWidget{
+  const _WorkLoadBars({
+    Key? key,
+    required this.table,
+  }) : super(key: key);
+
+  final TimeTable table;
+
+  @override
+  Widget build(BuildContext context) {
+
+    final double w = Utils.screenWidthPercentage(context, 1);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: List<Widget>.generate(7, (index) => 
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: buildWorkLoadBar(w, table.dayLoad(index)),
+      )
+    )
+    );
+  }
+
+  Widget buildWorkLoadBar(double w, double hours) {
     
     return Row(
       children: [
@@ -122,36 +140,35 @@ class TimeTableTile extends StatelessWidget{
         ),
         Spaces.horizontal10,
         Text(
-          hours.toString(),
+          hours.toStringAsFixed(2),
           // style: TextSTyle,
         )
       ],
     );
   }
-  
-  List<Widget> buildWorkLoadBars(double w) {
-    return List<Widget>.generate(7, (index) => 
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: buildWorkLoadBar(w, index),
-      )
-    );
-  }
-  
-  List<Widget> workLoadBarHeaders() {
-    return List<Widget>.generate(7, (index) => 
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.5),
-        child: Text(
-          days[index].substring(0,1),
-          style: const TextStyle(
+}
 
-            //TODO: supplied by main theme
-            color: Color.fromRGBO(55, 71, 79, 1),
-            fontSize: 16,
-            fontWeight: FontWeight.bold
+class _WorkLoadBarHeaders extends StatelessWidget{
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return Column(
+
+      children: List<Widget>.generate(7, (index) => 
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6.5),
+          child: Text(
+            days[index].substring(0,1),
+            style: const TextStyle(
+
+              //TODO: supplied by main theme
+              color: Color.fromRGBO(55, 71, 79, 1),
+              fontSize: 16,
+              fontWeight: FontWeight.bold
+            ),
           ),
-        ),
+        )
       )
     );
   }

@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Classes/TimeSlot.dart';
 import 'package:timetable_app/Databases/LocalDatabase.dart';
+import 'package:timetable_app/Globals/Decorations.dart';
+import 'package:timetable_app/Globals/Styles.dart';
+import 'package:timetable_app/Globals/enums.dart';
 
 import '../Globals/Providers.dart';
 import '../Globals/Reals.dart';
@@ -37,9 +40,6 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
 
   @override
   Widget build(BuildContext context) {
-
-  
-  final Day_pr dayWatch = context.watch<Day_pr>();
   
     return StatefulBuilder(
       builder: (context, setState) {
@@ -64,228 +64,92 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
                   child: SingleChildScrollView(
                 
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
-                    physics: const BouncingScrollPhysics(),
                 
                     child: Column(
                       children: [
                 
-                        const SizedBox(height: 10),
+                        Spaces.vertical10,
                           
-                        TextFormField(
-                          onSaved: (value) {
-                            widget.timeSlot.title = value??'Title';
-                          },
-                          style: TextStyle(
-                            color: Colors.blueGrey.shade800,
-                          ),
+                          //Title Field
+                        _InputField(
+                          label: 'Title', 
+                          onSaved: (value) => widget.timeSlot.title = value ?? 'Title', 
+                          color: widget.color, 
                           initialValue: widget.timeSlot.title,
                           validator: (title) {
                             if(title == null || title == ''){
                               return 'Title must not be empty.';
                             }
                           },
-                          decoration: InputDecoration(
-                            labelText: 'Title',
-                            labelStyle: TextStyle(
-                              color: Utils.darken(widget.color)
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                          ),
                         ),
-                        const SizedBox(height: 20,),
+
+                        Spaces.vertical20,
                 
-                        TextFormField(
-                          onSaved: (value) {
-                            widget.timeSlot.subtitle = value??'';
-                          },
-                          style: TextStyle(
-                            color: Colors.blueGrey.shade800,
-                          ),
+                        //Subtitle Field
+                        _InputField(
                           initialValue: widget.timeSlot.subtitle,
-                          decoration: InputDecoration(
-                            labelText: 'Subtitle',
-                            labelStyle: TextStyle(
-                              color: Utils.darken(widget.color)
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                          ),
+                          color: widget.color,
+                          label: 'Subtitle',
+                          onSaved: (value) => widget.timeSlot.subtitle = value ?? '',
                         ),
-                        const SizedBox(height: 20,),
+
+                        Spaces.vertical20,
                 
-                        TextFormField(
-                
-                          onSaved: (newValue){
-                           widget.timeSlot.venue = newValue ?? '';
-                          },
-                          style: TextStyle(
-                            color: Colors.blueGrey.shade800,
-                          ),
-                          initialValue: widget.timeSlot.venue,
-                          decoration: InputDecoration(
-                            labelText: 'Venue',
-                            labelStyle: TextStyle(
-                              color: Utils.darken(widget.color)
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                          ),
+                        //Venue Field
+                        _InputField(
+                          label: 'Venue', 
+                          onSaved: (value) => widget.timeSlot.venue = value ?? '', 
+                          color: widget.color, 
+                          initialValue: widget.timeSlot.venue
                         ),
-                        const SizedBox(height: 20,),
+                        
+                        Spaces.vertical20,
                 
+                        //Day Selector
                         Container(
                           
                           width: 200,
                           alignment: Alignment.centerLeft,
                           padding: const EdgeInsets.symmetric(horizontal: 8),
+                          decoration: Decorations.DropdownButton(Utils.lighten(widget.color)),
                           
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Utils.lighten(widget.color),
-                            ),
-                            borderRadius: BorderRadius.circular(6)
-                          ),
-                
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                          
-                              value: days[dayWatch.selectedDay],
-                              isExpanded: true,
-                                            
-                              style: TextStyle(
-                                color: Colors.blueGrey.shade800
-                              ),
-                          
-                              iconSize: 32,
-                              iconEnabledColor: widget.color,
-                              
-                              items: days.map((day)
-                                => DropdownMenuItem<String>(
-                                  value: day,
-                                  child: Text(
-                                    day,
-                                    style: TextStyle(
-                                      color: Colors.blueGrey.shade800
-                                    ),
-                                  ),
-                                )).toList(),
-                              
-                              onChanged: (newValue) {
-                                if(newValue != null){
-                                  setState((){
-                                    widget.newDay = days.indexOf(newValue);
-                                  });
-                                }
+                          child: _DropdownButton(
+                            color: widget.color,
+                            onChanged: (newValue) {
+                              if(newValue != null){
+                                setState((){
+                                  widget.newDay = days.indexOf(newValue);
+                                });
                               }
-                            ),
+                            },
                           ),
                         ),
                 
                         const SizedBox(height: 40,),
                       
-                        Row(
-                
-                          children: [
-                
-                            Text(
-                              'Start Time:',
-                              style: TextStyle(
-                                fontSize: 14,
-                                letterSpacing: 0.8,
-                                fontWeight: FontWeight.w400,
-                                color: Utils.darken(widget.color),
-                              ),
-                            ),
-                
-                            const Spacer(flex: 1),
-                
-                            Text(
-                              widget.timeSlot.startTime.toString().substring(10,15),
-                              style: const TextStyle(
-                                color: Color.fromRGBO(55, 71, 79, 1),
-                                fontSize: 18,
-                                letterSpacing: 1.2,
-                                fontStyle: FontStyle.italic,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                
-                            const Spacer(flex: 3),
-                            
-                            ElevatedButton(
-                              onPressed: (){
-                                Navigator.of(context).push(
-                                  showPicker(
-                                    accentColor: widget.color,
-                                    value: widget.timeSlot.startTime,
-                                    displayHeader: false, 
-                                    onChange: (newValue){
-                                      widget.timeSlot.startTime = newValue;
-                                      setState((){});
-                                    }
-                                  ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: widget.color
-                              ),
-                              child: const Icon(Icons.edit, color: Colors.white),
-                            ),
-                          ],
+                        //StartTime modifier
+                        _TimerRow(
+                          label: 'Start Time:',
+                          color: widget.color, 
+                          initialValue: widget.timeSlot.startTime, 
+                          onChange: (newValue) =>
+                            setState(() => widget.timeSlot.startTime = newValue)
                         ),
                 
                         const SizedBox(height: 2,),
                       
-                        Row(
-                          children: [
-                
-                            Text(
-                              'End Time:',
-                              style: TextStyle(
-                                fontSize: 14,
-                                letterSpacing: 0.8,
-                                fontWeight: FontWeight.w400,
-                                color: Utils.darken(widget.color),
-                              ),
-                            ),
-                
-                            const Spacer(flex: 1),
-                
-                            Text(
-                              widget.timeSlot.endTime.toString().substring(10, 15),
-                              style: const TextStyle(
-                                color: Color.fromRGBO(55, 71, 79, 1),
-                                fontSize: 18,
-                                letterSpacing: 1.2,
-                                fontStyle: FontStyle.italic,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                
-                            const Spacer(flex: 3),
-                            
-                            ElevatedButton(
-                              onPressed: (){
-                                Navigator.of(context).push(
-                                  showPicker(
-                                    accentColor: widget.color,
-                                    value: widget.timeSlot.endTime, 
-                                    displayHeader: false,
-                                    onChange: (newValue){
-                                      widget.timeSlot.endTime = newValue;
-                                      setState((){});
-                                    }
-                                  ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: widget.color
-                              ),
-                              child: const Icon(Icons.edit, color: Colors.white,),
-                            ),
-                          ],
+                        //EndTime modifier
+                        _TimerRow(
+                          color: widget.color, 
+                          label: 'End Time:', 
+                          initialValue: widget.timeSlot.endTime, 
+                          onChange: (newValue) =>
+                            setState(() => widget.timeSlot.endTime = newValue)
                         ),
                 
                         const SizedBox(height: 80,),
                         
+                        //Actions:-
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -307,7 +171,6 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
                                     provider.validate(widget.timeSlot.copyWith(day: widget.newDay));
                 
                                     widget.timeSlot.day = widget.newDay;
-
                 
                                     if(widget.isfirst){
                                       //1) Save to disk
@@ -376,6 +239,148 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
           )
         );
       }
+    );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+class _TimerRow extends StatelessWidget {
+  const _TimerRow({
+    Key? key,
+    required this.color,
+    required this.label,
+    required this.initialValue,
+    required this.onChange,
+  }) : super(key: key);
+
+  final Color color;
+  final String label;
+  final TimeOfDay initialValue;
+  final void Function(TimeOfDay) onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+                
+      children: [
+                
+        Text(
+          label,
+          style: TextStyles.b4(color: color),
+        ),
+                
+        const Spacer(flex: 1),
+                
+        Text(
+          initialValue.toString().substring(10,15),
+          style: TextStyles.b3
+        ),
+                
+        const Spacer(flex: 3),
+        
+        ElevatedButton(
+          onPressed: (){
+            Navigator.of(context).push(
+              showPicker(
+                accentColor: color,
+                value: initialValue,
+                displayHeader: false, 
+                onChange: onChange
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: color
+          ),
+          child: const Icon(Icons.edit, color: Colors.white),
+        ),
+      ],
+    );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+class _DropdownButton extends StatelessWidget {
+  const _DropdownButton({
+    Key? key,
+    required this.color,
+    required this.onChanged
+  }) : super(key: key);
+
+  final Color color;
+  final void Function(String?)? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+
+    final Day_pr dayWatch = context.watch<Day_pr>();
+
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<String>(
+    
+        value: days[dayWatch.selectedDay],
+        isExpanded: true,
+                      
+        style: TextStyle(
+          color: Colors.blueGrey.shade800
+        ),
+    
+        iconSize: 32,
+        iconEnabledColor: color,
+        
+        items: days.map((day)
+          => DropdownMenuItem<String>(
+            value: day,
+            child: Text(
+              day,
+              style: TextStyle(
+                color: Colors.blueGrey.shade800
+              ),
+            ),
+          )).toList(),
+        
+        onChanged: onChanged
+      ),
+    );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+class _InputField extends StatelessWidget {
+  const _InputField({
+    Key? key,
+    required this.label,
+    required this.onSaved,
+    required this.color,
+    required this.initialValue,
+    this.validator,
+  }) : super(key: key);
+
+  final String label;
+  final String initialValue;
+  final Color color;
+  final Function(String?) onSaved;
+  final String? Function(String?)? validator;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      onSaved: onSaved,
+      style: TextStyle(
+        color: Colors.blueGrey.shade800,
+      ),
+      initialValue: initialValue,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(
+          color: Utils.darken(color)
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+      ),
     );
   }
 }

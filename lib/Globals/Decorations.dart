@@ -53,6 +53,12 @@ class Decorations{
       ),
     ],
   );
+  static BoxDecoration DropdownButton(Color color) => BoxDecoration(
+    border: Border.all(
+      color: color,
+    ),
+    borderRadius: BorderRadius.circular(6)
+  );
   static BoxDecoration workLoadBar = BoxDecoration(
     gradient: LinearGradient(
       colors: [Colors.green.shade300, Colors.green],
@@ -60,5 +66,17 @@ class Decorations{
       end: Alignment.bottomCenter
     ),
     borderRadius: BorderRadius.circular(12)
+  );
+  static BoxDecoration timeTableWidgetHeader(AssetImage image, double h, double w) => BoxDecoration(
+            
+    borderRadius: BorderRadius.only(
+      topLeft: const Radius.circular(16),
+      topRight: const Radius.circular(16),
+      bottomRight: Radius.elliptical(w / 3, h / 10),
+    ),
+    image: DecorationImage(
+      image: image,
+      fit: BoxFit.cover
+    ),
   );
 }
