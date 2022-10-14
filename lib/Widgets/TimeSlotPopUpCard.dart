@@ -37,6 +37,46 @@ class TimeSlotPopUpCard extends StatefulWidget {
 
 class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
 
+  Future<void> onSave() async {       
+   
+    bool isvalid = widget.formKey.currentState!.validate();
+    if(isvalid){
+      widget.formKey.currentState!.save();
+
+      try{
+        Table_pr provider = Provider.of<Table_pr>(context, listen: false);
+        
+        widget.timeSlot.parentId = currentTableId;
+
+        widget.timeSlot.validate();
+        provider.validate(widget.timeSlot.copyWith(day: widget.newDay));
+
+        widget.timeSlot.day = widget.newDay;
+
+        if(widget.isfirst){
+          //1) Save to disk
+          //2) Save to provider.
+          TimeSlot newSlot = await LocalDatabase.instance.addSlot(widget.timeSlot);
+          provider.addSlot(newSlot);
+        }
+        else{
+          await LocalDatabase.instance.updateSlot(widget.timeSlot);                                   
+          provider.reformList(widget.timeSlot, widget.previousDay);
+        }
+        
+        //Sort the TimeTable
+        provider.sort(widget.timeSlot.day, widget.timeSlot.parentId);
+        
+        if(!mounted){
+          return;
+        }
+        Navigator.of(context).pop();
+      }
+      catch (e){
+        Utils.showErrorDialog(context, e.toString());
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,47 +195,7 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
                           children: [
                             ElevatedButton(
                               
-                              onPressed: () async {
-                
-                                bool isvalid = widget.formKey.currentState!.validate();
-                                if(isvalid){
-                                  widget.formKey.currentState!.save();
-                
-                                  try{
-                
-                                    Table_pr provider = Provider.of<Table_pr>(context, listen: false);
-                                    
-                                    widget.timeSlot.parentId = currentTableId;
-                
-                                    widget.timeSlot.validate();
-                                    provider.validate(widget.timeSlot.copyWith(day: widget.newDay));
-                
-                                    widget.timeSlot.day = widget.newDay;
-                
-                                    if(widget.isfirst){
-                                      //1) Save to disk
-                                      //2) Save to provider.
-                                      TimeSlot newSlot = await LocalDatabase.instance.addSlot(widget.timeSlot);
-                                      provider.addSlot(newSlot);
-                                    }
-                                    else{
-                                      await LocalDatabase.instance.updateSlot(widget.timeSlot);                                   
-                                      provider.reformList(widget.timeSlot, widget.previousDay);
-                                    }
-                                    
-                                    //Sort the TimeTable
-                                    provider.sort(widget.timeSlot.day, widget.timeSlot.parentId);
-                                    
-                                    if(!mounted){
-                                      return;
-                                    }
-                                    Navigator.of(context).pop();
-                                  }
-                                  catch (e){
-                                    Utils.showErrorDialog(context, e.toString());
-                                  }
-                                }
-                              },
+                              onPressed: onSave,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: widget.color
                               ),
@@ -206,11 +206,11 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
                               ),
                             ),
                             const SizedBox(width: 40),
-                            TextButton(
-                              
+                            OutlinedButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
                               }, 
+                              style: ButtonStyles.closeButton(widget.color),
                               child: Text(
                                 'Cancel',
                                 style: TextStyle(

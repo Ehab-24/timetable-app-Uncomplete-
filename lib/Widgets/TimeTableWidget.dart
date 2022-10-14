@@ -19,13 +19,18 @@ import 'DayTile.dart';
 import 'TimeSlotTile.dart';
 
 
+const int initialDelay = 3;
+const Color color = Colors.purple;
+
 class TimeTableWidget extends StatelessWidget {
   const TimeTableWidget({
     Key? key,
     required this.timeTable,
+    required this.headerImage,
   }) : super(key: key);
 
   final TimeTable timeTable;
+  final AssetImage headerImage;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +40,7 @@ class TimeTableWidget extends StatelessWidget {
     
         backgroundColor: Colors.grey.shade200,
     
-        body: TimeTablePageBody(timeTable: timeTable),
+        body: TimeTablePageBody(timeTable: timeTable, headerImage: headerImage,),
 
         floatingActionButton: _FAB(timeTable: timeTable),
       ),
@@ -64,7 +69,7 @@ class _FAB extends StatelessWidget {
       child: FloatingActionButton(
         mini: true,
         onPressed: (){
-          Utils.showEditDialog(context, TimeSlot.zero(timeTable.id!, dayWatch.selectedDay), color: Colors.pink, isfirst: true);
+          Utils.showEditDialog(context, TimeSlot.zero(timeTable.id!, dayWatch.selectedDay), color: color, isfirst: true);
         },
         child: Icon(Icons.add, color: Colors.blueGrey.shade800,),
       ),
@@ -78,9 +83,11 @@ class TimeTablePageBody extends StatefulWidget {
   const TimeTablePageBody({
     Key? key,
     required this.timeTable,
+    required this.headerImage
   }) : super(key: key);
 
   final TimeTable timeTable;
+  final AssetImage headerImage;
 
   @override
   State<TimeTablePageBody> createState() => _TimeTablePageBodyState();
@@ -89,7 +96,6 @@ class TimeTablePageBody extends StatefulWidget {
 class _TimeTablePageBodyState extends State<TimeTablePageBody> {
 
   late Day_pr dayReader;
-  late final AssetImage headerImage;
   late final Timer timer;
 
   //A 100ms ticker to manage animations.
@@ -97,11 +103,12 @@ class _TimeTablePageBodyState extends State<TimeTablePageBody> {
 
   @override
   void initState() {
-    timer = Timer.periodic(Durations.d100, (timer) {setState((){ticker++;});});
+    timer = Timer.periodic(Durations.d100, (timer) =>
+      setState(() =>
+        ticker++ 
+      )
+    );
     dayReader = context.read<Day_pr>();
-
-    //TODO: make it pop up w/ opacity
-    headerImage = const AssetImage('assets/images/blobs_bk2.png');
     super.initState();
   }
 
@@ -121,6 +128,8 @@ class _TimeTablePageBodyState extends State<TimeTablePageBody> {
     final double h = Utils.screenHeightPercentage(context, 1);
     final double w = Utils.screenWidthPercentage(context, 1);
 
+    print(w);
+
     return Column(
 
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -128,21 +137,22 @@ class _TimeTablePageBodyState extends State<TimeTablePageBody> {
       children: [
 
         Container(
-              
-          width: double.infinity,
+        
           height: h * 0.3,
           margin: const EdgeInsets.all(6),
-          padding: const EdgeInsets.only(left: 8, right: 8, top: 16, bottom: 16),
-              
-          decoration: Decorations.timeTableWidgetHeader(headerImage, h, w),
-      
+          padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
+          decoration: Decorations.timeTableWidgetHeader(widget.headerImage, h, w),
+          
+          //Header Image
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-            
+              
+              //Action Buttons
               _Actions(timeTable: widget.timeTable),
             
+              //Title
               Text(
                 widget.timeTable.title,
                 style: TextStyles.h2,
@@ -168,10 +178,11 @@ class _TimeTablePageBodyState extends State<TimeTablePageBody> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(8, 20, 6, 20),
                       child: DayTile(
-                        day: day, width: w * 0.1, 
+                        day: day, width: w * 0.1,
+                        color: color,
                         onDayChange: (){
                           dayReader.setDay(days.indexOf(day));
-                          ticker = 0;
+                          ticker = initialDelay;
                         }))
                   ).toList()
                 ),
@@ -185,12 +196,13 @@ class _TimeTablePageBodyState extends State<TimeTablePageBody> {
                   itemCount: noOfDays + 1,
                   itemBuilder: ((context, index) {
 
-                    bool beginAnimation = ticker > index + 2;
+                    bool beginAnimation = ticker > index + initialDelay;
 
                     return index == noOfDays  //The last index.
                     ? Spaces.vertical60
                     : AnimatedTimeSlotTile(
-                      beginAnimation: beginAnimation, 
+                      beginAnimation: beginAnimation,
+                      color: color,
                       timeSlot: widget.timeTable.timeSlots[dayWatch.selectedDay][index],
                     );}
                   )
@@ -237,7 +249,6 @@ class _ActionsState extends State<_Actions> {
         child: Row(
       
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      
           children: [
       
             IconButton(
@@ -316,10 +327,7 @@ class _FocusedMenuHolder extends StatelessWidget {
         ),
       ],
         
-      child: const Icon(
-        Icons.more_vert, 
-        color: Colors.white, size: 30,
-      )
+      child: const Icon(Icons.more_vert,color: Colors.white, size: 30,),
     );
   }
 

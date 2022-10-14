@@ -106,7 +106,8 @@ class _DummyState extends State<Dummy>{
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8, 20, 6, 20),
                     child: DayTile(
-                      day: day, width: w * 0.1, 
+                      color: Colors.cyan,
+                      day: day, width: w * 0.1,
                       onDayChange: (){
                         dayReader.setDay(days.indexOf(day));
                         ticker = 0;

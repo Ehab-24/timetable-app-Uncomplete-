@@ -79,4 +79,11 @@ class Decorations{
       fit: BoxFit.cover
     ),
   );
+  static BoxDecoration timeSlotTileFooter(Color color) => BoxDecoration(
+    color: color,
+    borderRadius: const BorderRadius.only(
+      bottomLeft: Radius.elliptical(10, 10),
+      bottomRight: Radius.elliptical(10, 10),
+    )
+  );
 }

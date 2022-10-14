@@ -2,6 +2,8 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:timetable_app/Globals/Decorations.dart';
+import 'package:timetable_app/Globals/Styles.dart';
 
 import '../Classes/TimeSlot.dart';
 import '../Globals/Utils.dart';
@@ -53,25 +55,14 @@ class TimeSlotTile extends StatelessWidget {
           
             title: Text(
               timeSlot.title,
-              style: TextStyle(
-                color: Utils.darken(color),
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-              ),
+              style: TextStyles.h6(Utils.darken(color)),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
           
             subtitle: Text(
               '${timeSlot.subtitle}iafu ef oeufeyf ieuyf iuyewf e fiuyef weyf iwe fyw efy wieuf yi ef',
-              style: const TextStyle(
-                // color: Color.fromRGBO(238, 238, 238, 1),
-                color: Color.fromRGBO(69, 90, 100, 1),
-                // color: Colors.yellow,
-                fontSize: 12,
-                letterSpacing: 0.8,
-                fontWeight: FontWeight.w600
-              ),
+              style: TextStyles.b6,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -83,12 +74,7 @@ class TimeSlotTile extends StatelessWidget {
           
             trailing: Text(
               timeSlot.venue,
-              style: const TextStyle(
-                color: Color.fromRGBO(55, 71, 79, 1),
-                fontSize: 16,
-                letterSpacing: 0.8,
-                fontWeight: FontWeight.bold
-              ),
+              style: TextStyles.h4,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -107,13 +93,7 @@ class TimeSlotTile extends StatelessWidget {
           alignment: Alignment.center,
           margin: const EdgeInsets.only(right: 12),
 
-          decoration: BoxDecoration(
-            color: Utils.darken(color, 0.05),
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.elliptical(10, 10),
-              bottomRight: Radius.elliptical(10, 10),
-            )
-          ),
+          decoration: Decorations.timeSlotTileFooter(Utils.darken(color, 0.05)),
 
           child: Text(
             '${timeSlot.startTime.hour}:${timeSlot.startTime.minute} - ${timeSlot.endTime.hour}:${timeSlot.endTime.minute}',
@@ -137,10 +117,12 @@ class AnimatedTimeSlotTile extends StatelessWidget {
     Key? key,
     required this.beginAnimation,
     required this.timeSlot,
+    required this.color
   }) : super(key: key);
 
   final bool beginAnimation;
   final TimeSlot timeSlot;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +137,7 @@ class AnimatedTimeSlotTile extends StatelessWidget {
 
       padding: EdgeInsets.only(
         left: beginAnimation
-        ? w * 0.12: w * 0.07,
+        ? w * 0.2: w * 0.15,
         right: beginAnimation
         ? w * 0.1: w * 0.15,
         top: h * 0.05
@@ -172,7 +154,7 @@ class AnimatedTimeSlotTile extends StatelessWidget {
       
         child: TimeSlotTile(
           timeSlot: timeSlot, 
-          color: Colors.pink,
+          color: color,
         ),
       ),
     );

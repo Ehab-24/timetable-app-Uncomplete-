@@ -15,6 +15,7 @@ class TimeTableTile extends StatelessWidget{
   }) : super(key: key);
 
   final TimeTable table;
+  final AssetImage tablePageHeaderImage = const AssetImage('assets/images/blobs_bk2.png');
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class TimeTableTile extends StatelessWidget{
               context,
               MaterialPageRoute(
                 builder: (context) => 
-                  TimeTableWidget(timeTable: table),
+                  TimeTableWidget(timeTable: table, headerImage: tablePageHeaderImage,),
               )
             );
           },

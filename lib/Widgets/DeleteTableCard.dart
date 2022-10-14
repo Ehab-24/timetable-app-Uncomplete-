@@ -133,7 +133,7 @@ class _ActionsState extends State<_Actions> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          style: ButtonStyles.closeButton,
+          style: ButtonStyles.closeButton(Colors.blueGrey.shade800),
           child: const Text(
             'No',
           ),

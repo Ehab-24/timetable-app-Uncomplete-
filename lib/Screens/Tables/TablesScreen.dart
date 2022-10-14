@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Globals/ColorsAndGradients.dart';
-import 'package:timetable_app/Globals/Reals.dart';
 import 'package:timetable_app/Globals/Utils.dart';
 import 'package:timetable_app/Globals/enums.dart';
 
@@ -128,6 +127,18 @@ class TableScreenAppBar extends StatelessWidget
       child: Stack(
         children: [
 
+          Positioned(
+            top: h * 0.12,
+            left: w * 0.4,
+            child: Transform.rotate(
+              angle: 29,
+              child: Icon(
+                Icons.pages_rounded, 
+                size: w * 0.15, 
+                color: const Color.fromRGBO(214, 214, 214, 0.4),
+              ),
+            ),
+          ),
           Positioned(
             top: h * 0.22,
             left: w * 0.05,

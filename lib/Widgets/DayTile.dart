@@ -11,11 +11,13 @@ class DayTile extends StatefulWidget{
     Key? key,
     required this.day,
     required this.width,
+    required this.color,
     required this.onDayChange,
   }) : super(key: key);
 
   final String day;
   final double width;
+  final Color color;
   final Function() onDayChange;
 
   @override
@@ -58,7 +60,7 @@ class _DayTileState extends State<DayTile> {
         decoration: BoxDecoration(
           
           color: isSelected
-          ? Colors.pink  //TODO: Parent table should provide this color
+          ? widget.color  //TODO: Parent table should provide this color
           : Colors.white.withOpacity(0.8),
 
           borderRadius: BorderRadius.circular(10),

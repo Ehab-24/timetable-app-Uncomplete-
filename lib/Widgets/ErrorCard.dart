@@ -66,9 +66,11 @@ class ErrorCard extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  style: ButtonStyles.closeButton,
+                  style: ButtonStyles.closeButton(Colors.blueGrey.shade800),
+                  // style: ButtonStyles.closeButton,
                   child: const Text(
                     'Close',
+                    style: TextStyle(color: Color.fromRGBO(55, 71, 79, 1)),
                   ),
                 )
               ],

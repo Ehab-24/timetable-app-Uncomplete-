@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Classes/TimeTable.dart';
 import 'package:timetable_app/Databases/LocalDatabase.dart';
+import 'package:timetable_app/Globals/Styles.dart';
+import 'package:timetable_app/Globals/enums.dart';
 
 import '../Globals/Decorations.dart';
 import '../Globals/Providers.dart';
@@ -85,12 +87,13 @@ class CreateTableCard extends StatelessWidget {
                         ),
                       ),
                       
-                      const SizedBox(width: 40),
+                      Spaces.horizontal20,
                       
-                      TextButton(
+                      OutlinedButton(
                         onPressed: () {
                           Navigator.of(context).pop();
-                        }, 
+                        },
+                        style: ButtonStyles.closeButton(Colors.blueGrey.shade800),
                         child: const Text(
                           'Cancel',
                         ),
