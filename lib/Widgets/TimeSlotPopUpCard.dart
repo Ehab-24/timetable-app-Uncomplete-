@@ -155,6 +155,7 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
                           
                           child: _DropdownButton(
                             color: widget.color,
+                            currentDay: days[widget.newDay],
                             onChanged: (newValue) {
                               if(newValue != null){
                                 setState((){
@@ -165,7 +166,7 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
                           ),
                         ),
                 
-                        const SizedBox(height: 40,),
+                        Spaces.vertical40,
                       
                         //StartTime modifier
                         _TimerRow(
@@ -306,21 +307,21 @@ class _DropdownButton extends StatelessWidget {
   const _DropdownButton({
     Key? key,
     required this.color,
-    required this.onChanged
+    required this.onChanged,
+    required this.currentDay,
   }) : super(key: key);
 
   final Color color;
+  final String currentDay;
   final void Function(String?)? onChanged;
 
   @override
   Widget build(BuildContext context) {
 
-    final Day_pr dayWatch = context.watch<Day_pr>();
-
     return DropdownButtonHideUnderline(
       child: DropdownButton<String>(
     
-        value: days[dayWatch.selectedDay],
+        value: currentDay,
         isExpanded: true,
                       
         style: TextStyle(

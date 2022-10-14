@@ -20,6 +20,23 @@ class TimeTable{
   //Each list represents a day of week.
   List<List<TimeSlot>> timeSlots = List.generate(7, (index) => []);
 
+  double get dayLoadAvg =>
+    weekLoad / 7;
+    
+  double get dayLoadBusinessAvg =>
+    weekLoad / 5;
+
+  double get maxLoad {
+    double max = 0.01;
+    for(int i = 0; i < timeSlots.length; i++){
+      double load = dayLoad(i);
+      if(load > max){
+        max = load;
+      }
+    }
+    return max;
+  }
+
   double dayLoad(int day) {
     
     int length = timeSlots[day].length;
@@ -31,12 +48,6 @@ class TimeTable{
     return sum;
   }
 
-  double get dayLoadAverage =>
-    weekLoad / 7;
-    
-  double get dayLoadBusiness =>
-    weekLoad / 5;
-
   double get weekLoad{
     
     double sum = 0;
@@ -44,6 +55,34 @@ class TimeTable{
       sum += dayLoad(i);
     }
     return sum;
+  }
+
+  //Expects current day.
+  TimeSlot? currentSlot(int day) {
+
+    List<TimeSlot>list = timeSlots[day];
+    for(int i = 0; i < list.length; i++){
+      if(list[i].overruns(TimeOfDay.now())){
+        return list[i];
+      }
+    }
+    return null;
+  }
+
+  //Expects current day.
+  TimeSlot? nextSlot(int day){
+
+    TimeSlot? _currentSlot = currentSlot(day);
+    if(_currentSlot == null){
+      return null;
+    }
+
+    int index = timeSlots[day].indexOf(_currentSlot);
+    
+    if(index + 1 < timeSlots[day].length){
+      return timeSlots[day][index + 1];
+    }
+    return null;
   }
 
   TimeTable({

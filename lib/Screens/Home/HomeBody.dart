@@ -1,23 +1,37 @@
 
 import 'package:flutter/material.dart';
+import 'package:timetable_app/Classes/TimeSlot.dart';
+import 'package:timetable_app/Globals/enums.dart';
+
+import '../../Classes/TimeTable.dart';
 
 
 class HomeBody extends StatelessWidget {
-  const HomeBody({Key? key}) : super(key: key);
+  const HomeBody({
+    Key? key,
+    required this.homeTable
+  }) : super(key: key);
+
+  final TimeTable homeTable;
 
   @override
   Widget build(BuildContext context) {
+
+    final int currentDay = DateTime.now().weekday - 1;
+
+    final TimeSlot currentSlot = homeTable.currentSlot(currentDay) ?? TimeSlot.zero(-1,-1).copyWith(title: 'None');
+    final TimeSlot nextSlot = homeTable.nextSlot(currentDay) ?? TimeSlot.zero(-1,-1).copyWith(title: 'None');
 
     return Center(
       child: Column(
 
         mainAxisAlignment: MainAxisAlignment.center,
 
-        children: const [
+        children: [
 
           Text(
-            'Current: OOP',
-            style: TextStyle(
+            'Current: ${currentSlot.title}',
+            style: const TextStyle(
               color: Color.fromARGB(255, 205, 238, 219),
               fontSize: 32,
               wordSpacing: 10,
@@ -27,8 +41,10 @@ class HomeBody extends StatelessWidget {
             // textAlign: TextAlign.center,
           ),
           Text(
-            '11:00 - 12:30',
-            style: TextStyle(
+            currentSlot.title == 'None'
+            ? ''
+            : '${currentSlot.startTime.toString().substring(10,15)} - ${currentSlot.endTime.toString().substring(10,15)}',
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               wordSpacing: 10,
@@ -37,11 +53,11 @@ class HomeBody extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 40,),
+          Spaces.vertical40,
 
           Text(
-            'Upcoming: DLD',
-            style: TextStyle(
+            'Upcoming: ${nextSlot.title}',
+            style: const TextStyle(
               color: Color.fromARGB(255, 205, 238, 219),
               fontSize: 24,
               letterSpacing: 0.7,
@@ -50,8 +66,10 @@ class HomeBody extends StatelessWidget {
             // textAlign: TextAlign.center,
           ),
           Text(
-            '2:15 - 3:45',
-            style: TextStyle(
+            nextSlot.title == 'None'
+            ? ''
+            : '${nextSlot.startTime.toString().substring(10,15)} - ${nextSlot.endTime.toString().substring(10,15)}',
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               letterSpacing: 1.2,

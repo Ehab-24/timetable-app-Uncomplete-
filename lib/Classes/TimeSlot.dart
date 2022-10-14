@@ -100,4 +100,14 @@ class TimeSlot{
       throw 'Ending time must be greater than starting time.';
     }
   }
+
+  bool overruns(TimeOfDay time){
+    if(time < endTime && time > startTime){
+      return true;
+    }
+    if(time == startTime || time == endTime){
+      return true;
+    }
+    return false;
+  }
 }

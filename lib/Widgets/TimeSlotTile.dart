@@ -10,6 +10,58 @@ import '../Globals/Utils.dart';
 import '../Globals/enums.dart';
 
 
+class AnimatedTimeSlotTile extends StatelessWidget {
+  const AnimatedTimeSlotTile({
+    Key? key,
+    required this.beginAnimation,
+    required this.timeSlot,
+    required this.color
+  }) : super(key: key);
+
+  final bool beginAnimation;
+  final TimeSlot timeSlot;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+
+    final double h = Utils.screenHeightPercentage(context,1);
+    final double w = Utils.screenWidthPercentage(context,1);
+
+    return AnimatedPadding(
+
+      duration: Durations.d300,
+      curve: Curves.decelerate,
+
+      padding: EdgeInsets.only(
+        left: beginAnimation
+        ? w * 0.2: w * 0.15,
+        right: beginAnimation
+        ? w * 0.1: w * 0.15,
+        top: h * 0.06
+      ),
+
+      child: AnimatedOpacity(
+      
+        duration: beginAnimation
+        ? Durations.d300
+        : const Duration(seconds: 0),
+      
+        curve: Curves.easeInOut,
+        opacity: beginAnimation? 1: 0,
+      
+        child: TimeSlotTile(
+          timeSlot: timeSlot, 
+          color: color,
+        ),
+      ),
+    );
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 class TimeSlotTile extends StatelessWidget {
   TimeSlotTile({
     Key? key,
@@ -74,7 +126,7 @@ class TimeSlotTile extends StatelessWidget {
           
             trailing: Text(
               timeSlot.venue,
-              style: TextStyles.h4,
+              style: TextStyles.b6,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -98,7 +150,6 @@ class TimeSlotTile extends StatelessWidget {
           child: Text(
             '${timeSlot.startTime.hour}:${timeSlot.startTime.minute} - ${timeSlot.endTime.hour}:${timeSlot.endTime.minute}',
             style: const TextStyle(
-              // color: Color.fromRGBO(55, 71, 79, 1),
               color: Colors.white,
               fontWeight: FontWeight.w500,
               fontSize: 14
@@ -106,57 +157,6 @@ class TimeSlotTile extends StatelessWidget {
           ),
         )
       ],
-    );
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class AnimatedTimeSlotTile extends StatelessWidget {
-  const AnimatedTimeSlotTile({
-    Key? key,
-    required this.beginAnimation,
-    required this.timeSlot,
-    required this.color
-  }) : super(key: key);
-
-  final bool beginAnimation;
-  final TimeSlot timeSlot;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-
-    final double h = Utils.screenHeightPercentage(context,1);
-    final double w = Utils.screenWidthPercentage(context,1);
-
-    return AnimatedPadding(
-
-      duration: Durations.d300,
-      curve: Curves.decelerate,
-
-      padding: EdgeInsets.only(
-        left: beginAnimation
-        ? w * 0.2: w * 0.15,
-        right: beginAnimation
-        ? w * 0.1: w * 0.15,
-        top: h * 0.05
-      ),
-
-      child: AnimatedOpacity(
-      
-        duration: beginAnimation
-        ? Durations.d300
-        : const Duration(seconds: 0),
-      
-        curve: Curves.easeInOut,
-        opacity: beginAnimation? 1: 0,
-      
-        child: TimeSlotTile(
-          timeSlot: timeSlot, 
-          color: color,
-        ),
-      ),
     );
   }
 }

@@ -54,6 +54,6 @@ class TextStyles{
 class ButtonStyles{
 
     static ButtonStyle closeButton(Color color) => OutlinedButton.styleFrom(
-      side: BorderSide(color: color, width: 2)
+      side: BorderSide(color: color, width: 0.5)
     );
 }

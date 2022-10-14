@@ -121,21 +121,25 @@ class _WorkLoadBars extends StatelessWidget{
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: List<Widget>.generate(7, (index) => 
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: buildWorkLoadBar(w, table.dayLoad(index)),
-      )
+      children: List<Widget>.generate(7, (index) {
+
+        double maxLoad = table.maxLoad;
+        print(maxLoad);  
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: buildWorkLoadBar(w, table.dayLoad(index), maxLoad),
+        );
+      }
     )
     );
   }
 
-  Widget buildWorkLoadBar(double w, double hours) {
+  Widget buildWorkLoadBar(double w, double hours, double maxLoad) {
     
     return Row(
       children: [
         Container(
-          width: w * 0.7 * hours / 12 + 16,
+          width: w * 0.58 * hours / maxLoad + 16,
           height: 16,
           decoration: Decorations.workLoadBar
         ),
