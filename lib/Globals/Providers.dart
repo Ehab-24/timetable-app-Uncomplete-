@@ -95,6 +95,14 @@ class Table_pr extends ChangeNotifier{
     //No need to notify listeners here.
   }
 
+  void validateTitle(String title){
+    for(int i = 0; i < tables.length; i++){
+      if(tables[i].title == title){
+        throw('$title already exists');
+      }
+    }
+  }
+
   void reformList(TimeSlot timeSlot, int prevDay){
     
     if(timeSlot.day == prevDay){

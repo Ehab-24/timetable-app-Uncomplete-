@@ -41,13 +41,12 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
    
     bool isvalid = widget.formKey.currentState!.validate();
     if(isvalid){
-      widget.formKey.currentState!.save();
-
       try{
         Table_pr provider = Provider.of<Table_pr>(context, listen: false);
         
         widget.timeSlot.parentId = currentTableId;
 
+        widget.formKey.currentState!.save();
         widget.timeSlot.validate();
         provider.validate(widget.timeSlot.copyWith(day: widget.newDay));
 
@@ -70,6 +69,7 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
         if(!mounted){
           return;
         }
+
         Navigator.of(context).pop();
       }
       catch (e){

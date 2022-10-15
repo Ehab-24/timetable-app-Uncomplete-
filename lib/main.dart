@@ -7,9 +7,10 @@ import 'Classes/TimeTable.dart';
 import 'package:timetable_app/Globals/Providers.dart';
 
 import 'Globals/enums.dart';
-import 'Screens/Home/HomeScreen.dart';
-import 'Screens/Schedule/ScheduleScreen.dart';
-import 'Screens/Tables/TablesScreen.dart';
+import 'Screens/CreateFirstTableScreen.dart';
+import 'Screens/HomeScreen.dart';
+import 'Screens/ScheduleScreen.dart';
+import 'Screens/TablesScreen.dart';
 
 /*
   Provider and Database managment go hand to hand.
@@ -39,6 +40,7 @@ Future main() async {
 }
 
 Future<void> _initApp() async {
+  await LocalDatabase.instance.clearDatabase();
   timeTables = await LocalDatabase.instance.readAllTimeTables();
   TimeTable.sortAll(timeTables);
 }
@@ -63,6 +65,7 @@ class App extends StatelessWidget {
       );
 
     final Screen_pr screenWatch = context.watch<Screen_pr>();
+    final Table_pr tableWatch = context.watch<Table_pr>();
 
     return MaterialApp(
   
@@ -90,7 +93,8 @@ class App extends StatelessWidget {
         ),
         
         child: screenWatch.currentScreen == Screens.home
-        ? const HomeScreen() : screenWatch.currentScreen == Screens.mytables
+        ? tableWatch.tables.isEmpty ? const CreateFirstTableScreen()
+        : const HomeScreen() : screenWatch.currentScreen == Screens.mytables
         ? const TablesScreen() : const ScheduleScreen()
       ),
     );

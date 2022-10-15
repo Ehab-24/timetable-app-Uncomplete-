@@ -1,10 +1,42 @@
 
 import 'package:flutter/material.dart';
-import 'package:timetable_app/Classes/TimeSlot.dart';
-import 'package:timetable_app/Globals/enums.dart';
+import 'package:provider/provider.dart';
+import '../Classes/TimeSlot.dart';
+import '../Classes/TimeTable.dart';
+import '../Globals/Providers.dart';
+import '../Globals/enums.dart';
+import '../Widgets/LinearFlowFAB.dart';
 
-import '../../Classes/TimeTable.dart';
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+
+    Table_pr tableWatch = Provider.of<Table_pr>(context);
+
+    return Container(
+
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/home_bk.jpg'),
+          fit: BoxFit.cover
+        ),
+      ),
+
+      child: Scaffold(
+
+        backgroundColor: Colors.transparent,
+      
+        body: HomeBody(homeTable: tableWatch.tables[0]),
+
+        floatingActionButton: const LinearFlowFAB(),
+      ),
+    );
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
 
 class HomeBody extends StatelessWidget {
   const HomeBody({

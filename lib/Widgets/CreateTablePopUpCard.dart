@@ -69,18 +69,28 @@ class CreateTableCard extends StatelessWidget {
                       
                       ElevatedButton(
                         onPressed: () {
-                          Utils.formKey.currentState!.validate();
-                          Utils.formKey.currentState!.save();
 
-                          //1) Add to disk
-                          //2) Add to provider.
-                          LocalDatabase.instance.addTimeTable(
-                            TimeTable(title: title)
-                          ).then((timeTable) => 
-                              Provider.of<Table_pr>(context, listen: false).addTable(timeTable)
-                            );
+                          try{
+                            Table_pr tableReader = context.read<Table_pr>();
+
+                            Utils.formKey.currentState!.validate();
+                            Utils.formKey.currentState!.save();
+
+                            tableReader.validateTitle(title);
+
+                            //1) Add to disk
+                            //2) Add to provider.
+                            LocalDatabase.instance.addTimeTable(
+                              TimeTable(title: title)
+                            ).then((timeTable) => 
+                                tableReader.addTable(timeTable)
+                              );
                           
-                          Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          }
+                          catch (e){
+                            Utils.showErrorDialog(context, e.toString());
+                          }
                         }, 
                         child: const Text(
                           'Add',

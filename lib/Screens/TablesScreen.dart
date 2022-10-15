@@ -5,9 +5,9 @@ import 'package:timetable_app/Globals/ColorsAndGradients.dart';
 import 'package:timetable_app/Globals/Utils.dart';
 import 'package:timetable_app/Globals/enums.dart';
 
-import '../../../../Globals/Providers.dart';
-import '../../../../Widgets/TimeTableTile.dart';
-import '../../Widgets/LinearFlowFAB.dart';
+import '../../../Globals/Providers.dart';
+import '../../../Widgets/TimeTableTile.dart';
+import '../Widgets/LinearFlowFAB.dart';
 
 
 class TablesScreen extends StatefulWidget{

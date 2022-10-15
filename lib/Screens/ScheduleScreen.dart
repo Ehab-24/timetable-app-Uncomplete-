@@ -8,9 +8,9 @@ import 'package:timetable_app/Globals/Providers.dart';
 import 'package:timetable_app/Globals/Utils.dart';
 import 'package:timetable_app/Globals/enums.dart';
 
-import '../../Globals/Reals.dart';
-import '../../Widgets/DayTile.dart';
-import '../../Widgets/LinearFlowFAB.dart';
+import '../Globals/Reals.dart';
+import '../Widgets/DayTile.dart';
+import '../Widgets/LinearFlowFAB.dart';
 
 class ScheduleScreen extends StatefulWidget{
   const ScheduleScreen({super.key});
