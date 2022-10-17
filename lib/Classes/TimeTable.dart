@@ -72,15 +72,12 @@ class TimeTable{
   //Expects current day.
   TimeSlot? nextSlot(int day){
 
-    TimeSlot? _currentSlot = currentSlot(day);
-    if(_currentSlot == null){
-      return null;
-    }
+    List<TimeSlot>list = timeSlots[day];
 
-    int index = timeSlots[day].indexOf(_currentSlot);
-    
-    if(index + 1 < timeSlots[day].length){
-      return timeSlots[day][index + 1];
+    for(int i = 0; i < list.length; i++){
+      if(list[i].startTime > TimeOfDay.now()){
+        return list[i];
+      }
     }
     return null;
   }

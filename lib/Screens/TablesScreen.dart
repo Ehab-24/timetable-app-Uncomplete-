@@ -48,16 +48,17 @@ class _TablesScreenState extends State<TablesScreen> {
           
           ListView.builder(
             
-            // onPageChanged: ((value) => currentTableId = value),
-            physics: const BouncingScrollPhysics(),
+            physics: const PageScrollPhysics(),
 
-            itemCount: tableWatch.tables.length + 1,
+            itemCount: tableWatch.tables.length + 2,
             itemBuilder: ((context, index) => index == 0
-            ? SizedBox(height: h * 0.01,)
+            ? SizedBox(height: h * 0.07,)
+            : index == tableWatch.tables.length + 1
+            ? SizedBox(height: h * 0.07,)
             : Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12
+              padding: EdgeInsets.symmetric(
+                horizontal: w * 0.05,
+                vertical: h * 0.05
               ),
               child: AnimatedOpacity(
         

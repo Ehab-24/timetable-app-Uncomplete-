@@ -16,21 +16,30 @@ class HomeScreen extends StatelessWidget {
     Table_pr tableWatch = Provider.of<Table_pr>(context);
 
     return Container(
-
       decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/home_bk.jpg'),
-          fit: BoxFit.cover
+          image: DecorationImage(
+            image: AssetImage('assets/images/home_bk.jpg'),
+            fit: BoxFit.cover
+          ),
         ),
-      ),
+      child: Container(
+        
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.transparent, Colors.black87],
+            begin: Alignment.center,
+            end: Alignment.bottomCenter
+          )
+        ),
 
-      child: Scaffold(
-
-        backgroundColor: Colors.transparent,
-      
-        body: HomeBody(homeTable: tableWatch.tables[0]),
-
-        floatingActionButton: const LinearFlowFAB(),
+        child: Scaffold(
+    
+          backgroundColor: Colors.transparent,
+        
+          body: HomeBody(homeTable: tableWatch.tables[0]),
+    
+          floatingActionButton: const LinearFlowFAB(),
+        ),
       ),
     );
   }
@@ -70,7 +79,6 @@ class HomeBody extends StatelessWidget {
               letterSpacing: 0.8,
               fontWeight: FontWeight.w700,
             ),
-            // textAlign: TextAlign.center,
           ),
           Text(
             currentSlot.title == 'None'
@@ -95,7 +103,6 @@ class HomeBody extends StatelessWidget {
               letterSpacing: 0.7,
               fontWeight: FontWeight.w700,
             ),
-            // textAlign: TextAlign.center,
           ),
           Text(
             nextSlot.title == 'None'

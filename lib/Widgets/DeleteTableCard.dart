@@ -115,6 +115,11 @@ class _ActionsState extends State<_Actions> {
         
         ElevatedButton(
           onPressed: () {
+            if(tableReader.tables.length == 1){
+              Navigator.of(context).pop();
+              Utils.showErrorDialog(context, 'You must have atleast one table :(');
+              return;
+            }
             tableReader.removeTable(widget.timeTable);
             LocalDatabase.instance.deleteTimeTable(widget.timeTable.id!);
 

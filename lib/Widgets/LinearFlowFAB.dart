@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:timetable_app/Globals/ColorsAndGradients.dart';
 
 import '../Globals/Providers.dart';
 import '../Globals/enums.dart';
@@ -92,32 +93,51 @@ class _LinearFlowFABState extends State<LinearFlowFAB>
 
     Screen_pr screenWatch = context.watch<Screen_pr>();
 
-    return SizedBox(
-      width: buttonSize,
-      height: buttonSize,
-      child: FloatingActionButton(
+    Color splashColor = screenWatch.currentScreen == Screens.home
+    ? Colors.black38
+    : Colors.white30;
 
-        heroTag: icon.toString(),
-        elevation: 0.5,
-        backgroundColor: screenWatch.currentScreen == Screens.home
-        ? Colors.grey.shade200
-        : Colors.blueGrey.shade800,
-        
-        onPressed: onPressed,
-        child: icon == Icons.menu
-        ? AnimatedIcon(
-            icon: AnimatedIcons.menu_close, 
-            progress: controller, 
-            color: screenWatch.currentScreen == Screens.home
-            ? Colors.blueGrey.shade800
-            : Colors.white,
-            )
-        : Icon(
-          icon, 
-          color: screenWatch.currentScreen == Screens.home
-          ? Colors.blueGrey.shade800
-          : Colors.white
+    return Material(
+      type: MaterialType.transparency,
+      clipBehavior: Clip.hardEdge,
+      borderRadius: BorderRadius.circular(buttonSize/2),
+      child: InkResponse(
+    
+        splashColor: splashColor,
+        highlightColor: splashColor,
+        containedInkWell: true,
+        borderRadius: BorderRadius.circular(buttonSize/2),
+        onTap: onPressed,
+    
+        child: Ink(
+      
+          width: buttonSize,
+          height: buttonSize,
+      
+          decoration: BoxDecoration(
+            gradient: screenWatch.currentScreen == Screens.home
+            ? LinearGradient(colors: [Colors.white, Colors.grey.shade300])
+            : Gradients.linearFlowFAB,
+            borderRadius: BorderRadius.circular(buttonSize/2),
           ),
+      
+          child: Center(
+            child: icon == Icons.menu
+            ? AnimatedIcon(
+                icon: AnimatedIcons.menu_close, 
+                progress: controller, 
+                color: screenWatch.currentScreen == Screens.home
+                ? Colors.blueGrey.shade800
+                : Colors.white,
+                )
+            : Icon(
+              icon, 
+              color: screenWatch.currentScreen == Screens.home
+              ? Colors.blueGrey.shade800
+              : Colors.white
+              ),
+          )
+        ),
       ),
     );
   }

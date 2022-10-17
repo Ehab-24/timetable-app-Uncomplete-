@@ -40,7 +40,6 @@ Future main() async {
 }
 
 Future<void> _initApp() async {
-  await LocalDatabase.instance.clearDatabase();
   timeTables = await LocalDatabase.instance.readAllTimeTables();
   TimeTable.sortAll(timeTables);
 }

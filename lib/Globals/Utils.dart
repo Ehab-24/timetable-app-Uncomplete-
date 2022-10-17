@@ -41,7 +41,7 @@ class Utils{
     barrierColor: Colors.black.withOpacity(0.8),
     barrierDismissible: false,
     builder: (_) =>
-      TimeSlotPopUpCard(formKey: formKey, timeSlot: timeSlot, color: color, isfirst: isfirst)
+      TimeSlotPopUpCard(timeSlot: timeSlot, color: color, isfirst: isfirst)
     );
 
   static void showDeleteDialog(context, TimeSlot timeSlot) => showDialog(

@@ -15,13 +15,11 @@ import '../Globals/Utils.dart';
 class TimeSlotPopUpCard extends StatefulWidget {
   TimeSlotPopUpCard({
     Key? key,
-    required this.formKey,
     required this.timeSlot,
     required this.isfirst,
     required this.color
   }) : newDay = timeSlot.day, previousDay = timeSlot.day, super(key: key);
 
-  final GlobalKey<FormState> formKey;
   final TimeSlot timeSlot;
   final bool isfirst;
   final Color color;
@@ -39,14 +37,14 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
 
   Future<void> onSave() async {       
    
-    bool isvalid = widget.formKey.currentState!.validate();
+    bool isvalid = Utils.formKey.currentState!.validate();
     if(isvalid){
       try{
         Table_pr provider = Provider.of<Table_pr>(context, listen: false);
         
         widget.timeSlot.parentId = currentTableId;
 
-        widget.formKey.currentState!.save();
+        Utils.formKey.currentState!.save();
         widget.timeSlot.validate();
         provider.validate(widget.timeSlot.copyWith(day: widget.newDay));
 
@@ -96,7 +94,7 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
             children: [
 
               Form(
-                key: widget.formKey,
+                key: Utils.formKey,
                 child: Scrollbar(
 
                   thickness: 4,
@@ -120,6 +118,7 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
                             if(title == null || title == ''){
                               return 'Title must not be empty.';
                             }
+                            return null;
                           },
                         ),
 
