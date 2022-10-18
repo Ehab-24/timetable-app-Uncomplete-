@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:timetable_app/Globals/ColorsAndGradients.dart';
 import 'package:timetable_app/Globals/Decorations.dart';
 import 'package:timetable_app/Globals/Reals.dart';
 import 'package:timetable_app/Globals/Utils.dart';
@@ -21,87 +22,99 @@ class TimeTableTile extends StatelessWidget{
   Widget build(BuildContext context) {
 
     final double w = Utils.screenWidthPercentage(context, 1);
+    final double h = Utils.screenHeightPercentage(context, 1);
 
-    return Container(
+    return Stack(
 
-      decoration: Decorations.tableTileExternal,
+      clipBehavior: Clip.none,
 
-      child: Material(
+      children: [
+
+        Container(
         
-        type: MaterialType.transparency,
+          margin: EdgeInsets.only(top: h * 0.058),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.purple,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: const [
+              // BoxShadow(
+              //   color: Colors.black38,
+              //   offset: Offset(5,5),
+              //   blurRadius: 10,
+              // )
+            ]
+          ),
+          child: _WorkLoadBarHeaders()
+        ),
+
+        Positioned(
+
+          right: 0,
+
+          child: Container(
         
-        child: InkWell(
-      
-          borderRadius: BorderRadius.circular(24),
-          onLongPress: (){
-            Utils.showDeleteTableDialog(context, table);
-          },
-          onDoubleTap: (){},
-          onTap: (){
-            currentTableId = table.id!;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => 
-                  TimeTableWidget(timeTable: table, headerImage: tablePageHeaderImage,),
-              )
-            );
-          },
-      
-          child: Ink(
+            decoration: Decorations.tableTileExternal,
         
-            width: w * 0.9,
-            decoration: Decorations.tableTileInternal,
-        
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-        
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 20,
-                    left: 20,
-                    bottom: 12,
-                  ),
-                  child: Column(
-      
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-      
-                      Text(
-                        table.title,
-                        style: const TextStyle(
-                          color: Colors.pink,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600
+            child: Material(
+              
+              type: MaterialType.transparency,
+              
+              child: InkWell(
+            
+                borderRadius: BorderRadius.circular(8),
+                onLongPress: (){
+                  Utils.showDeleteTableDialog(context, table);
+                },
+                onDoubleTap: (){},
+                onTap: (){
+                  currentTableId = table.id!;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => 
+                        TimeTableWidget(timeTable: table, headerImage: tablePageHeaderImage,),
+                    )
+                  );
+                },
+            
+                child: Ink(
+              
+                  width: w * 0.8,
+                  decoration: Decorations.tableTileInternal,
+              
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 20,
+                      left: 20,
+                      bottom: 20,
+                    ),
+                    child: Column(
+            
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+            
+                        Text(
+                          table.title,
+                          style: const TextStyle(
+                            color: Colors.pink,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600
+                          ),
                         ),
-                      ),
-      
-                      Spaces.vertical20,
-      
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _WorkLoadBarHeaders(),
-
-                          Spaces.horizontal20,
-                          
-                          _WorkLoadBars(table: table)
-                      ],)
-                    ],
+            
+                        Spaces.vertical20,
+        
+                        _WorkLoadBars(table: table)
+                      ],
+                    ),
                   ),
                 ),
-        
-                Container(
-                  width: 8,
-                  //TODO: provide color.
-                  color: Colors.pink,
-                ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -124,7 +137,6 @@ class _WorkLoadBars extends StatelessWidget{
       children: List<Widget>.generate(7, (index) {
 
         double maxLoad = table.maxLoad;
-        print(maxLoad);  
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: buildWorkLoadBar(w, table.dayLoad(index), maxLoad),
@@ -158,17 +170,19 @@ class _WorkLoadBarHeaders extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     
+    final double h = Utils.screenHeightPercentage(context, 1);
+  print(h);
     return Column(
 
       children: List<Widget>.generate(7, (index) => 
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6.5),
+          padding: EdgeInsets.only(top: h * 0.015),
           child: Text(
             days[index].substring(0,1),
             style: const TextStyle(
 
               //TODO: supplied by main theme
-              color: Color.fromRGBO(55, 71, 79, 1),
+              color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.bold
             ),

@@ -2,9 +2,11 @@
 // ignore_for_file: camel_case_types
 
 import 'package:flutter/material.dart';
+import 'package:timetable_app/Classes/Reminder.dart';
 import 'package:timetable_app/Classes/TimeSlot.dart';
 import 'package:timetable_app/Classes/TimeTable.dart';
 import 'package:timetable_app/Globals/enums.dart';
+import 'package:timetable_app/Miscellaneous/ExtansionMethods.dart';
 
 
 class Day_pr extends ChangeNotifier{
@@ -31,6 +33,84 @@ class Screen_pr extends ChangeNotifier{
     currentScreen = screen;
     notifyListeners();
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+class Reminder_pr extends ChangeNotifier{
+
+
+/* ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ Fields. ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~*/
+  
+  List<Reminder> reminders;
+
+  Reminder_pr(this.reminders);
+
+
+/* ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ Methods for Reminders. ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~*/
+
+  void add(Reminder rem){
+
+    if(reminders.isEmpty){
+      reminders.add(rem);
+      return;
+    }
+
+    int index = searchInsertionIndex(rem);
+    for(int i = reminders.length - 1; i > index; i--){
+      reminders[i] = reminders[i-1];
+    }
+    reminders[index] = rem;
+  }
+
+  void remove(Reminder rem){
+
+    int index = searchRemovalIndex(rem);
+    reminders.removeAt(index);    
+  }
+
+
+/* ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ UTILITY ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~*/
+
+  int searchInsertionIndex(Reminder rem){
+  
+    for(int i = 0; i < reminders.length; i++){
+      if(rem > reminders[i]){
+        return i;
+      }
+    }
+    return reminders.length - 1;
+  }
+
+  int searchRemovalIndex(Reminder rem){
+   
+    int l = 0, r = reminders.length - 1;
+
+    if(reminders[l] == rem){
+      return l;
+    }
+    if(reminders[r] == rem){
+      return r;
+    }
+
+    int mid;
+    while(l < r){
+
+      mid = ((l + r) / 2).floor();
+
+      if(reminders[mid] > rem){
+        r = mid;
+      }
+      else if(rem > reminders[mid]){
+        l = mid;
+      }
+      else{
+        return mid;
+      }
+    }
+    return -1;
+  }
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

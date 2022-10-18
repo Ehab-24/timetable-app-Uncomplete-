@@ -150,7 +150,7 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
                           width: 200,
                           alignment: Alignment.centerLeft,
                           padding: const EdgeInsets.symmetric(horizontal: 8),
-                          decoration: Decorations.DropdownButton(Utils.lighten(widget.color)),
+                          decoration: Decorations.dropdownButton(Utils.lighten(widget.color)),
                           
                           child: _DropdownButton(
                             color: widget.color,
@@ -374,13 +374,7 @@ class _InputField extends StatelessWidget {
       ),
       initialValue: initialValue,
       validator: validator,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(
-          color: Utils.darken(color)
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-      ),
+      decoration: Decorations.textFormField(label, color),
     );
   }
 }

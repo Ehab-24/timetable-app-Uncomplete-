@@ -35,3 +35,41 @@ extension StringEx on String{
     return TimeOfDay(hour: int.parse(s.split(":")[0]), minute: int.parse(s.split(":")[1]));
   }
 }
+
+extension DateTimeExtenstion on DateTime{
+
+  bool operator >(DateTime dt){
+
+    if(this.year < dt.year){
+      return false;
+    }
+    if(this.year > dt.year){
+      return true;
+    }
+    if(this.month < dt.month){
+      return false;
+    }
+    if(this.month > dt.month){
+      return true;
+    }
+    if(this.day < dt.day){
+      return false;
+    }
+    if(this.day > dt.day){
+      return true;
+    }
+    if(this.hour < dt.hour){
+      return false;
+    }
+    if(this.hour > dt.hour){
+      return true;
+    }
+    if(this.minute < dt.minute){
+      return false;
+    }
+    if(this.minute > dt.minute){
+      return true;
+    }
+    return false;
+  }
+}

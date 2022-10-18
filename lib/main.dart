@@ -2,7 +2,9 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:timetable_app/Classes/Reminder.dart';
 import 'package:timetable_app/Databases/LocalDatabase.dart';
+import 'package:timetable_app/Screens/RemindersScreen.dart';
 import 'Classes/TimeTable.dart';
 import 'package:timetable_app/Globals/Providers.dart';
 
@@ -19,6 +21,7 @@ import 'Screens/TablesScreen.dart';
 */
 
 late List<TimeTable> timeTables;
+List<Reminder> reminders = [];
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,16 +35,12 @@ Future main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => Table_pr(timeTables)),
         ChangeNotifierProvider(create: (_) => Screen_pr()),
+        ChangeNotifierProvider(create: (_) => Reminder_pr(reminders)),
         ChangeNotifierProvider(create: (_) => Day_pr(DateTime.now().weekday - 1)),
       ],
       child: const App(),
     )
   );
-}
-
-Future<void> _initApp() async {
-  timeTables = await LocalDatabase.instance.readAllTimeTables();
-  TimeTable.sortAll(timeTables);
 }
 
 class App extends StatelessWidget {
@@ -75,7 +74,7 @@ class App extends StatelessWidget {
       home: PageTransitionSwitcher(
         
         duration: screenWatch.currentScreen == Screens.home
-        ? Durations.d1000
+        ? Durations.d500
         : Durations.d500,
         reverse: screenWatch.currentScreen == Screens.home,
         transitionBuilder: ((child, animation, secondaryAnimation) => 
@@ -83,9 +82,7 @@ class App extends StatelessWidget {
           SharedAxisTransition(
             animation: animation, 
             secondaryAnimation: secondaryAnimation,
-            fillColor: screenWatch.currentScreen == Screens.home
-            ? Colors.green.shade800
-            : Colors.blueGrey.shade900,
+            fillColor: Colors.blueGrey.shade900,
             transitionType: SharedAxisTransitionType.vertical,
             child: child,
           )
@@ -94,8 +91,14 @@ class App extends StatelessWidget {
         child: screenWatch.currentScreen == Screens.home
         ? tableWatch.tables.isEmpty ? const CreateFirstTableScreen()
         : const HomeScreen() : screenWatch.currentScreen == Screens.mytables
-        ? const TablesScreen() : const ScheduleScreen()
+        ? const TablesScreen() : screenWatch.currentScreen == Screens.reminders
+        ? RemindersScreen() :const ScheduleScreen()
       ),
     );
   }
+}
+
+Future<void> _initApp() async {
+  timeTables = await LocalDatabase.instance.readAllTimeTables();
+  TimeTable.sortAll(timeTables);
 }

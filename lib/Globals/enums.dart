@@ -60,6 +60,7 @@ class Screens{
   static const int mytables = 1;
   static const int web = 2;
   static const int schedule = 3;
+  static const int reminders = 4;
 }
 
 class Durations{

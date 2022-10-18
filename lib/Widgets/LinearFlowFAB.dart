@@ -59,23 +59,33 @@ class _LinearFlowFABState extends State<LinearFlowFAB>
           if(screenWatch.currentScreen == Screens.home){
             controller.reverse();
           }
+          else{
             screenReader.setScreen(Screens.home);
-          }
+          }}
         ),
         buildItem(Icons.list_alt, () {
           if(screenWatch.currentScreen == Screens.mytables){
             controller.reverse();
           }
-          screenReader.setScreen(Screens.mytables);
+          else{
+            screenReader.setScreen(Screens.mytables);
+          }
         }),
         buildItem(Icons.schedule, () {
           if(screenWatch.currentScreen == Screens.schedule){
             controller.reverse();
           }
-          screenReader.setScreen(Screens.schedule);
+          else{
+            screenReader.setScreen(Screens.schedule);
+          }
         }),
-        buildItem(Icons.computer, () {
-
+        buildItem(Icons.browse_gallery_outlined, () {
+          if(screenWatch.currentScreen == Screens.reminders){
+            controller.reverse();
+          }
+          else{
+            screenReader.setScreen(Screens.reminders);
+          }
         }),
         buildItem(Icons.menu, () {
           if(controller.status == AnimationStatus.completed){

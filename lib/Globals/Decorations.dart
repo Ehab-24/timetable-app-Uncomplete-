@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'ColorsAndGradients.dart';
+import 'Utils.dart';
 
 class Decorations{
 
@@ -40,11 +41,12 @@ class Decorations{
     );
   static BoxDecoration tableTileInternal = BoxDecoration(
           
-    gradient: Gradients.tableTile,
-    borderRadius: BorderRadius.circular(24)
+    // gradient: Gradients.tableTile,
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(8)
   );
   static BoxDecoration tableTileExternal = BoxDecoration(
-    borderRadius: BorderRadius.circular(24),
+    borderRadius: BorderRadius.circular(8),
     boxShadow: const [
       BoxShadow(
         color: Colors.black38,
@@ -53,7 +55,7 @@ class Decorations{
       ),
     ],
   );
-  static BoxDecoration DropdownButton(Color color) => BoxDecoration(
+  static BoxDecoration dropdownButton(Color color) => BoxDecoration(
     border: Border.all(
       color: color,
     ),
@@ -82,8 +84,28 @@ class Decorations{
   static BoxDecoration timeSlotTileFooter(Color color) => BoxDecoration(
     color: color,
     borderRadius: const BorderRadius.only(
-      bottomLeft: Radius.elliptical(10, 10),
-      bottomRight: Radius.elliptical(10, 10),
+      bottomLeft: Radius.circular(10),
+      bottomRight: Radius.circular(10),
     )
+  );
+  static const BoxDecoration homeVignette = BoxDecoration(
+    gradient: LinearGradient(
+      colors: [Colors.transparent, Colors.black87],
+      begin: Alignment.center,
+      end: Alignment.bottomCenter
+    )
+  );
+  static const BoxDecoration homeImage = BoxDecoration(
+    image: DecorationImage(
+      image: AssetImage('assets/images/home_bk.jpg'),
+      fit: BoxFit.cover
+    ),
+  );
+  static InputDecoration textFormField(String label, Color color) => InputDecoration(
+    labelText: label,
+    labelStyle: TextStyle(
+      color: Utils.darken(color)
+    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 10),
   );
 }

@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:timetable_app/Globals/Decorations.dart';
 import '../Classes/TimeSlot.dart';
 import '../Classes/TimeTable.dart';
 import '../Globals/Providers.dart';
@@ -16,21 +17,12 @@ class HomeScreen extends StatelessWidget {
     Table_pr tableWatch = Provider.of<Table_pr>(context);
 
     return Container(
-      decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/home_bk.jpg'),
-            fit: BoxFit.cover
-          ),
-        ),
+      
+      decoration: Decorations.homeImage,
+
       child: Container(
         
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.transparent, Colors.black87],
-            begin: Alignment.center,
-            end: Alignment.bottomCenter
-          )
-        ),
+        decoration: Decorations.homeVignette,
 
         child: Scaffold(
     

@@ -13,6 +13,7 @@ import 'package:timetable_app/Globals/enums.dart';
 
 import '../Classes/TimeSlot.dart';
 import '../Classes/TimeTable.dart';
+import '../Globals/ColorsAndGradients.dart';
 import '../Globals/Providers.dart';
 import '../Globals/Reals.dart';
 import 'DayTile.dart';
@@ -321,7 +322,7 @@ class _FocusedMenuHolder extends StatelessWidget {
         ),
         focusedMenuItem(
           onPressed: (){
-            Utils.showEditDialog(context, TimeSlot.zero(timeTable.id!, dayWatch.selectedDay), color: Colors.pink, isfirst: true);
+            Utils.showEditDialog(context, TimeSlot.zero(timeTable.id!, dayWatch.selectedDay), color: Colors.purple, isfirst: true);
           }, 
           item: focusedMenuItems[6],
         ),

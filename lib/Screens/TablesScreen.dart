@@ -50,15 +50,12 @@ class _TablesScreenState extends State<TablesScreen> {
             
             physics: const PageScrollPhysics(),
 
-            itemCount: tableWatch.tables.length + 2,
-            itemBuilder: ((context, index) => index == 0
-            ? SizedBox(height: h * 0.07,)
-            : index == tableWatch.tables.length + 1
-            ? SizedBox(height: h * 0.07,)
-            : Padding(
+            itemCount: tableWatch.tables.length ,
+            itemBuilder: ((context, index) => 
+            Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: w * 0.05,
-                vertical: h * 0.05
+                vertical: h * 0.1
               ),
               child: AnimatedOpacity(
         
@@ -67,7 +64,7 @@ class _TablesScreenState extends State<TablesScreen> {
                 opacity: beginAnimation? 1: 0,
         
                 child: TimeTableTile(
-                  table: tableWatch.tables[index - 1]
+                  table: tableWatch.tables[index]
                 )
               ),
             )
@@ -116,99 +113,104 @@ class TableScreenAppBar extends StatelessWidget
 
     final double w = Utils.screenWidthPercentage(context, 1);
 
-    return Container(
-
-      decoration: BoxDecoration(
-        gradient: Gradients.primary,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.elliptical(w/2, h * 0.05),
-          bottomRight: Radius.elliptical(w/2, h * 0.05),
-        ),
+    return ClipRRect(
+      
+      borderRadius: BorderRadius.only(
+        bottomLeft: Radius.elliptical(w/2, h * 0.05),
+        bottomRight: Radius.elliptical(w/2, h * 0.05),
       ),
-      child: Stack(
-        children: [
-
-          Positioned(
-            top: h * 0.12,
-            left: w * 0.4,
-            child: Transform.rotate(
-              angle: 29,
-              child: Icon(
-                Icons.pages_rounded, 
-                size: w * 0.15, 
-                color: const Color.fromRGBO(214, 214, 214, 0.4),
+      
+      child: Container(
+    
+        decoration: const BoxDecoration(
+          gradient: Gradients.primary,
+        ),
+        child: Stack(
+    
+          children: [
+    
+            Positioned(
+              top: h * 0.12,
+              left: w * 0.4,
+              child: Transform.rotate(
+                angle: 29,
+                child: Icon(
+                  Icons.pages_rounded, 
+                  size: w * 0.15, 
+                  color: const Color.fromRGBO(214, 214, 214, 0.4),
+                ),
               ),
             ),
-          ),
-          Positioned(
-            top: h * 0.22,
-            left: w * 0.05,
-            child: Transform.rotate(
-              angle: 75,
-              child: Icon(
-                Icons.pages_rounded, 
-                size: w * 0.5, 
-                color: const Color.fromRGBO(214, 214, 214, 0.4),
+            Positioned(
+              top: h * 0.22,
+              left: w * 0.05,
+              child: Transform.rotate(
+                angle: 75,
+                child: Icon(
+                  Icons.pages_rounded, 
+                  size: w * 0.5, 
+                  color: const Color.fromRGBO(214, 214, 214, 0.4),
+                ),
               ),
             ),
-          ),
-          Positioned(
-            top: h * 0.2,
-            left: w * 0.65,
-            child: Transform.rotate(
-              angle: 175,
-              child: Icon(
-                Icons.pages_rounded, 
-                size: w * 0.25, 
-                color: const Color.fromRGBO(214, 214, 214, 0.4),
+            Positioned(
+              top: h * 0.2,
+              left: w * 0.65,
+              child: Transform.rotate(
+                angle: 175,
+                child: Icon(
+                  Icons.pages_rounded, 
+                  size: w * 0.25, 
+                  color: const Color.fromRGBO(214, 214, 214, 0.4),
+                ),
               ),
             ),
-          ),
-
-          Positioned(
-            left: w * 0.32,
-            top: h * 0.27,
-            child: RichText(
-              text: const TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'M', 
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white
+    
+            Positioned(
+              left: w * 0.32,
+              top: h * 0.27,
+              child: RichText(
+                text: const TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'M', 
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white
+                      ),
                     ),
-                  ),
-                  TextSpan(
-                    text: 'y',
-                    style: TextStyle(
-                      fontSize: 36,
-                      color: Colors.white70,
-                      fontWeight: FontWeight.bold
-                    )
-                  ),
-                  TextSpan(
-                    text: '  T', 
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white
+                    TextSpan(
+                      text: 'y',
+                      style: TextStyle(
+                        fontSize: 36,
+                        color: Colors.white70,
+                        fontWeight: FontWeight.bold
+                      )
                     ),
-                  ),
-                  TextSpan(
-                    text: 'ables',
-                    style: TextStyle(
-                      fontSize: 36,
-                      color: Colors.white70,
-                      fontWeight: FontWeight.bold
-                    )
-                  ),
-                ]
-              )
-            ),
-          ), 
-        ],
-      )
+                    TextSpan(
+                      text: '  T', 
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'ables',
+                      style: TextStyle(
+                        fontSize: 36,
+                        color: Colors.white70,
+                        fontWeight: FontWeight.bold
+                      )
+                    ),
+                  ]
+                )
+              ),
+            ), 
+          ],
+        )
+      ),
     );
   }
 }
