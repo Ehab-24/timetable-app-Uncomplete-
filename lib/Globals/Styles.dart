@@ -17,7 +17,8 @@ class TextStyles{
   static const b3 = TextStyle(
       color: Color.fromRGBO(55, 71, 79, 1),
       fontSize: 18,
-      letterSpacing: 1.2,
+      letterSpacing: 1,
+      wordSpacing: 2,
       fontStyle: FontStyle.italic,
       fontWeight: FontWeight.w400,
     );
@@ -55,5 +56,9 @@ class ButtonStyles{
 
     static ButtonStyle closeButton(Color color) => OutlinedButton.styleFrom(
       side: BorderSide(color: color, width: 0.5)
+    );
+    static ButtonStyle okButton(Color color) => ElevatedButton.styleFrom(
+      backgroundColor: color,
+      foregroundColor: Colors.white
     );
 }

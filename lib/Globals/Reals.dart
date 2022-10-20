@@ -5,6 +5,20 @@ import 'package:timetable_app/Globals/enums.dart';
 
 // const int INT_MAX = 9223372036854775807;
 
+
+ThemeData themeData = ThemeData(
+  scrollbarTheme: ScrollbarThemeData(
+    thumbColor: MaterialStateProperty.all(Colors.grey),
+    crossAxisMargin: 4
+  ), 
+  colorScheme: ColorScheme.fromSwatch().copyWith(
+    onPrimary: Colors.grey.shade200,
+    primary: Colors.blueGrey.shade900,
+    secondary: Colors.white
+    // secondary: Colors.blueGrey.shade800
+  ),
+);
+
 List<String> days = [
   'Monday',
   'Tuesday',

@@ -4,12 +4,22 @@ import 'package:flutter/material.dart';
 class Tables{
 
   static String timeTablesTable = 'TimeTablesTable';
+  static String remindersTable = 'RemindersTable';
   static String slotsTable = 'SlotsTable';
 
   static String timeTablesTableSchema = '''
   CREATE TABLE $timeTablesTable (
     ${TimeTableFields.title} ${DataTypes.string},
     ${TimeTableFields.id} ${DataTypes.id}
+  )
+  ''';
+
+  static String remindersTableSchema = '''
+  CREATE TABLE $remindersTable (
+    ${ReminderFields.dateTime} ${DataTypes.string},
+    ${ReminderFields.title} ${DataTypes.string},
+    ${ReminderFields.description} ${DataTypes.string},
+    ${ReminderFields.id} ${DataTypes.id}
   )
   ''';
 
@@ -40,6 +50,13 @@ class TimeTableFields{
     title = 'title',
     // color = 'color',
     id = '_id';
+}
+
+class ReminderFields{
+  static String title = 'title',
+    id = '_id',
+    dateTime = 'dateTime',
+    description = 'description';
 }
 
 class TimeSlotFields{

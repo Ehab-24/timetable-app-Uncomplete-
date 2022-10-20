@@ -56,17 +56,27 @@ class Reminder_pr extends ChangeNotifier{
       return;
     }
 
+    //Add a place holder.
+    reminders.add(Reminder.zero);
+
+    //Find proper index to keep the array sorted.
     int index = searchInsertionIndex(rem);
+
+    //Shift elements to the right.
     for(int i = reminders.length - 1; i > index; i--){
       reminders[i] = reminders[i-1];
     }
     reminders[index] = rem;
+
+    notifyListeners();
   }
 
   void remove(Reminder rem){
 
     int index = searchRemovalIndex(rem);
-    reminders.removeAt(index);    
+    reminders.removeAt(index);
+
+    notifyListeners();    
   }
 
 
@@ -131,14 +141,14 @@ class Table_pr extends ChangeNotifier{
     
     int index = indexOfParent(ts.parentId);
 
-    if(ts.startTime.hour < tables[index].minTime.hour
-    || ts.startTime.hour == tables[index].minTime.hour && ts.startTime.minute < tables[index].minTime.minute){
-      tables[index].minTime = ts.startTime;
-    }
-    else if(ts.endTime.hour > tables[index].maxTime.hour
-    || ts.endTime.hour == tables[index].maxTime.hour && ts.endTime.minute > tables[index].maxTime.minute){
-      tables[index].maxTime = ts.endTime;
-    }
+    // if(ts.startTime.hour < tables[index].minTime.hour
+    // || ts.startTime.hour == tables[index].minTime.hour && ts.startTime.minute < tables[index].minTime.minute){
+    //   tables[index].minTime = ts.startTime;
+    // }
+    // else if(ts.endTime.hour > tables[index].maxTime.hour
+    // || ts.endTime.hour == tables[index].maxTime.hour && ts.endTime.minute > tables[index].maxTime.minute){
+    //   tables[index].maxTime = ts.endTime;
+    // }
 
     tables[index].add(ts);
     notifyListeners();

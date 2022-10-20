@@ -35,7 +35,7 @@ class TimeTableTile extends StatelessWidget{
           margin: EdgeInsets.only(top: h * 0.058),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.purple,
+            color: Colors.pink,
             borderRadius: BorderRadius.circular(10),
             boxShadow: const [
               // BoxShadow(

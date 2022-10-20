@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Databases/LocalDatabase.dart';
+import 'package:timetable_app/Globals/enums.dart';
 
 import '../Classes/TimeTable.dart';
 import '../Globals/Providers.dart';
@@ -113,6 +114,18 @@ class _ActionsState extends State<_Actions> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         
+        OutlinedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          style: ButtonStyles.closeButton(Colors.blueGrey.shade800),
+          child: const Text(
+            'No',
+          ),
+        ),
+
+        Spaces.horizontal40,
+
         ElevatedButton(
           onPressed: () {
             if(tableReader.tables.length == 1){
@@ -130,19 +143,7 @@ class _ActionsState extends State<_Actions> {
           child: const Text(
             'Yes',
           ),
-        ),
-        
-        const SizedBox(width: 40),
-        
-        OutlinedButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          style: ButtonStyles.closeButton(Colors.blueGrey.shade800),
-          child: const Text(
-            'No',
-          ),
-        ),
+        ),        
       ],
     );
   }

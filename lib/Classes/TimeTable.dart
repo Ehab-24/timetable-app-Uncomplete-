@@ -14,8 +14,8 @@ class TimeTable{
   int? id;
   // int color;
   String title;
-  TimeOfDay minTime = const TimeOfDay(hour: 12, minute: 0),
-            maxTime = const TimeOfDay(hour: 12, minute: 0);
+  // TimeOfDay minTime = const TimeOfDay(hour: 12, minute: 0),
+  //           maxTime = const TimeOfDay(hour: 12, minute: 0);
 
   //Each list represents a day of week.
   List<List<TimeSlot>> timeSlots = List.generate(7, (index) => []);
@@ -114,13 +114,13 @@ class TimeTable{
     bool didRemove = timeSlots[ts.day].remove(ts);
 
     //If the removed time slot held 'minTime', we search for a new minTime. 
-    if(ts.startTime == minTime){
-      minTime = findMin();
-    }
-    //If the removed time slot held 'maxTime', we search for a new maxTime. 
-    if(ts.endTime == maxTime){
-      maxTime = findMax();
-    }
+    // if(ts.startTime == minTime){
+    //   minTime = findMin();
+    // }
+    // //If the removed time slot held 'maxTime', we search for a new maxTime. 
+    // if(ts.endTime == maxTime){
+    //   maxTime = findMax();
+    // }
 
     return didRemove;
   }
@@ -201,30 +201,30 @@ class TimeTable{
 
 /*  ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ UTILITY ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~*/
   
-  TimeOfDay findMin(){
+  // TimeOfDay findMin(){
 
-    TimeOfDay min = const TimeOfDay(hour: 23, minute: 59);
+  //   TimeOfDay min = const TimeOfDay(hour: 23, minute: 59);
     
-    for(int i = 0; i < timeSlots.length; i++){
-      for(int j = 0; j < timeSlots[i].length; j++){
-        if(timeSlots[i][j].startTime < min){
-          min = timeSlots[i][j].startTime;
-        }
-      }
-    }
-    return min;
-  }
-  TimeOfDay findMax(){
+  //   for(int i = 0; i < timeSlots.length; i++){
+  //     for(int j = 0; j < timeSlots[i].length; j++){
+  //       if(timeSlots[i][j].startTime < min){
+  //         min = timeSlots[i][j].startTime;
+  //       }
+  //     }
+  //   }
+  //   return min;
+  // }
+  // TimeOfDay findMax(){
 
-    TimeOfDay max = const TimeOfDay(hour: 0, minute: 0);
+  //   TimeOfDay max = const TimeOfDay(hour: 0, minute: 0);
 
-    for(int i = 0; i < timeSlots.length; i++){
-      for(int j = 0; j < timeSlots[i].length; j++){
-        if(timeSlots[i][j].endTime > max){
-          max = timeSlots[i][j].endTime;
-        }
-      }
-    }
-    return max;
-  }
+  //   for(int i = 0; i < timeSlots.length; i++){
+  //     for(int j = 0; j < timeSlots[i].length; j++){
+  //       if(timeSlots[i][j].endTime > max){
+  //         max = timeSlots[i][j].endTime;
+  //       }
+  //     }
+  //   }
+  //   return max;
+  // }
 }

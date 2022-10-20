@@ -13,7 +13,6 @@ import 'package:timetable_app/Globals/enums.dart';
 
 import '../Classes/TimeSlot.dart';
 import '../Classes/TimeTable.dart';
-import '../Globals/ColorsAndGradients.dart';
 import '../Globals/Providers.dart';
 import '../Globals/Reals.dart';
 import 'DayTile.dart';
@@ -21,7 +20,7 @@ import 'TimeSlotTile.dart';
 
 
 const int initialDelay = 3;
-const Color color = Colors.purple;
+const Color color = Colors.pink;
 
 class TimeTableWidget extends StatelessWidget {
   const TimeTableWidget({
@@ -128,8 +127,6 @@ class _TimeTablePageBodyState extends State<TimeTablePageBody> {
     
     final double h = Utils.screenHeightPercentage(context, 1);
     final double w = Utils.screenWidthPercentage(context, 1);
-
-    print(w);
 
     return Column(
 

@@ -14,19 +14,18 @@ class Utils{
 
   static final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  static void showSnackBar(BuildContext context, String content, {int seconds = 3, Color color = const Color.fromRGBO(66, 66, 66, 1)}){
+  static void showSnackBar(BuildContext context, String content, {int seconds = 3}){
     ScaffoldMessenger.of(context)
     ..removeCurrentSnackBar()
     ..showSnackBar(SnackBar(
+      
+      duration: Duration(seconds: seconds),
       content: Text(
         content,
         style: const TextStyle(
           color: Colors.white
         ),
       ), 
-      duration: Duration(seconds: seconds),
-      backgroundColor: color,
-
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),

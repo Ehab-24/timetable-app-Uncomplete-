@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Classes/Reminder.dart';
 import 'package:timetable_app/Databases/LocalDatabase.dart';
+import 'package:timetable_app/Globals/Reals.dart';
 import 'package:timetable_app/Screens/RemindersScreen.dart';
 import 'Classes/TimeTable.dart';
 import 'package:timetable_app/Globals/Providers.dart';
@@ -21,9 +22,10 @@ import 'Screens/TablesScreen.dart';
 */
 
 late List<TimeTable> timeTables;
-List<Reminder> reminders = [];
+late List<Reminder> reminders;
 
 Future main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
 
   //TODO: await ServicesPref.init();
@@ -45,25 +47,18 @@ Future main() async {
 
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
-
+  
   @override
   Widget build(BuildContext context) {
-    
-    ThemeData themeData = ThemeData(
-        scrollbarTheme: ScrollbarThemeData(
-          thumbColor: MaterialStateProperty.all(Colors.grey),
-          crossAxisMargin: 4
-        ), 
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          onPrimary: Colors.grey.shade200,
-          primary: Colors.grey.shade900,
-          secondary: Colors.white
-          // secondary: Colors.blueGrey.shade800
-        ),
-      );
 
     final Screen_pr screenWatch = context.watch<Screen_pr>();
     final Table_pr tableWatch = context.watch<Table_pr>();
+
+    Widget currentScreen = screenWatch.currentScreen == Screens.home
+      ? tableWatch.tables.isEmpty ? const CreateFirstTableScreen()
+      : const HomeScreen() : screenWatch.currentScreen == Screens.mytables
+      ? const TablesScreen() : screenWatch.currentScreen == Screens.reminders
+      ? const RemindersScreen() : const ScheduleScreen();
 
     return MaterialApp(
   
@@ -88,11 +83,7 @@ class App extends StatelessWidget {
           )
         ),
         
-        child: screenWatch.currentScreen == Screens.home
-        ? tableWatch.tables.isEmpty ? const CreateFirstTableScreen()
-        : const HomeScreen() : screenWatch.currentScreen == Screens.mytables
-        ? const TablesScreen() : screenWatch.currentScreen == Screens.reminders
-        ? RemindersScreen() :const ScheduleScreen()
+        child: currentScreen,
       ),
     );
   }
@@ -101,4 +92,6 @@ class App extends StatelessWidget {
 Future<void> _initApp() async {
   timeTables = await LocalDatabase.instance.readAllTimeTables();
   TimeTable.sortAll(timeTables);
+
+  reminders = await LocalDatabase.instance.readAllReminders();
 }

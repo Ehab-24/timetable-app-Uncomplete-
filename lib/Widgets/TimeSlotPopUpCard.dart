@@ -193,19 +193,6 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            ElevatedButton(
-                              
-                              onPressed: onSave,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: widget.color
-                              ),
-                              child: Text(
-                                widget.isfirst
-                                ? 'Add'
-                                : 'Save',
-                              ),
-                            ),
-                            const SizedBox(width: 40),
                             OutlinedButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
@@ -216,6 +203,21 @@ class _TimeSlotPopUpCardState extends State<TimeSlotPopUpCard> {
                                 style: TextStyle(
                                   color: widget.color
                                 ),
+                              ),
+                            ),
+                            
+                            Spaces.horizontal40,
+
+                            ElevatedButton(
+                              
+                              onPressed: onSave,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: widget.color
+                              ),
+                              child: Text(
+                                widget.isfirst
+                                ? 'Add'
+                                : 'Save',
                               ),
                             ),
                           ],
@@ -283,10 +285,19 @@ class _TimerRow extends StatelessWidget {
           onPressed: (){
             Navigator.of(context).push(
               showPicker(
+                // iosStylePicker: true,
+                hourLabel: '',
+                minuteLabel: '',
                 accentColor: color,
                 value: initialValue,
-                displayHeader: false, 
-                onChange: onChange
+                displayHeader: false,
+                onChange: onChange,
+                buttonsSpacing: 8,
+                buttonStyle: ElevatedButton.styleFrom(
+                  backgroundColor: color,
+                  foregroundColor: Colors.white,
+                ),
+                cancelButtonStyle: ElevatedButton.styleFrom()
               ),
             );
           },

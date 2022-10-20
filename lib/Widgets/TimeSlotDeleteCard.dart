@@ -1,6 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:timetable_app/Globals/Decorations.dart';
+import 'package:timetable_app/Globals/Styles.dart';
+import 'package:timetable_app/Globals/enums.dart';
 
 import '../Classes/TimeSlot.dart';
 import '../Globals/Providers.dart';
@@ -73,7 +76,18 @@ class TimeSlotDeleteCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: ButtonStyles.closeButton(Colors.blueGrey.shade800), 
+                      child: const Text(
+                        'No',
+                      ),
+                    ),
+
+                    Spaces.horizontal40,
+
                     ElevatedButton(
                       onPressed: () {
                         Provider.of<Table_pr>(context,listen: false).removeSlot(timeSlot);
@@ -82,17 +96,6 @@ class TimeSlotDeleteCard extends StatelessWidget {
                       }, 
                       child: const Text(
                         'Yes',
-                      ),
-                    ),
-                    
-                    const SizedBox(width: 40),
-                    
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      }, 
-                      child: const Text(
-                        'No',
                       ),
                     ),
                   ],

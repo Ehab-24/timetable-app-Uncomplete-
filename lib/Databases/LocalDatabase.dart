@@ -1,5 +1,6 @@
 
 import 'package:sqflite/sqflite.dart';
+import 'package:timetable_app/Classes/Reminder.dart';
 import 'package:timetable_app/Classes/TimeSlot.dart';
 import 'package:timetable_app/Classes/TimeTable.dart';
 
@@ -28,17 +29,71 @@ class LocalDatabase {
   }
 
   Future<Database> _initDB() async {
-    return await openDatabase(dbName, version: 5, onCreate: _onCreate);
+    return await openDatabase(dbName, version: 8, onCreate: _onCreate);
   }
   Future<void> _onCreate(Database db, int version) async {
     await db.execute(Tables.timeTablesTableSchema);
     await db.execute(Tables.slotsTableSchema);
-    addTimeTable(TimeTable(title: 'Title'));
+    await db.execute(Tables.remindersTableSchema);
   }
 
   Future<void> close() async {
     final db = await instance.database;
     db.close();
+  }
+
+/* ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ Methods for Reminders. ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~*/
+
+
+  Future<Reminder> addReminder(Reminder rem) async {
+    
+    final Database db = await instance.database;
+
+    final int id  = await db.insert(Tables.remindersTable, rem.toJson());
+    return rem.copyWith(id: id);
+  }
+
+  Future<List<Reminder>> readAllReminders() async {
+
+    final Database db = await instance.database;
+
+    var result = await db.rawQuery('''
+  SELECT * FROM ${Tables.remindersTable}
+  ''');
+
+    return result.map((json) => Reminder.fromJson(json)).toList();
+  }
+
+  Future<int> updateReminder(Reminder rem) async {
+
+    final Database db = await instance.database;
+
+    return await db.update(
+      Tables.remindersTable, 
+      rem.toJson(),
+      where: '${ReminderFields.id} = ?',
+      whereArgs: [rem.id]
+    );
+  }
+
+  Future<int> deleteReminder(int id) async {
+
+    final Database db = await instance.database;
+
+    return await db.rawDelete('''
+  DELETE FROM ${Tables.remindersTable}
+  WHERE ${ReminderFields.id} = ?
+  ''', [id]
+    );
+  }
+
+  Future<void> clearAllReminders() async {
+
+    final Database db = await instance.database;
+
+    await db.rawDelete('''
+  DELETE FROM ${Tables.remindersTable}
+  ''');
   }
   
 /* ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ Methods for Time Slots. ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~*/
@@ -206,6 +261,9 @@ class LocalDatabase {
   ''');
     await db.rawDelete('''
   DELETE FROM ${Tables.timeTablesTable}
+  ''');
+    await db.rawDelete('''
+  DELETE FROM ${Tables.remindersTable}
   ''');
   }
 

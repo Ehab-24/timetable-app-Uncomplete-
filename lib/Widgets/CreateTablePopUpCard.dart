@@ -67,6 +67,18 @@ class CreateTableCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       
+                      OutlinedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: ButtonStyles.closeButton(Colors.blueGrey.shade800),
+                        child: const Text(
+                          'Cancel',
+                        ),
+                      ),
+
+                      Spaces.horizontal20,
+
                       ElevatedButton(
                         onPressed: () {
 
@@ -95,19 +107,7 @@ class CreateTableCard extends StatelessWidget {
                         child: const Text(
                           'Add',
                         ),
-                      ),
-                      
-                      Spaces.horizontal20,
-                      
-                      OutlinedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        style: ButtonStyles.closeButton(Colors.blueGrey.shade800),
-                        child: const Text(
-                          'Cancel',
-                        ),
-                      ),
+                      ),                      
                     ],
                   )
                 ],
