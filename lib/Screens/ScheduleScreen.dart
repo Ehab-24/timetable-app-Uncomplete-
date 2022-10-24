@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_sequence_animation/flutter_sequence_animation.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Globals/Providers.dart';
 import 'package:timetable_app/Globals/Utils.dart';
@@ -19,7 +20,37 @@ class ScheduleScreen extends StatefulWidget{
   State<ScheduleScreen> createState() => _ScheduleScreenState();
 }
 
-class _ScheduleScreenState extends State<ScheduleScreen> {
+class _ScheduleScreenState extends State<ScheduleScreen> 
+  with TickerProviderStateMixin {
+
+  late final AnimationController controller;
+  late final SequenceAnimation animation;
+
+  @override
+  void initState() {
+    
+    controller = AnimationController(vsync: this, duration: Durations.d1000);
+
+    animation = SequenceAnimationBuilder()
+      .addAnimatable(animatable: Tween<double>(begin: 0, end: 1), from: Durations.d600, to: Durations.d1000, tag: 'opacity')
+      .addAnimatable(
+        animatable: Tween<double>(begin: 0.7, end: 1), 
+        from: Durations.d300, 
+        to: Durations.d800, 
+        tag: 'scale'
+      )
+    .animate(controller);
+
+    controller.forward();
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,21 +58,31 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
       floatingActionButton: const LinearFlowFAB(),
 
-      body: Container(
-    
-        width: 200,
-        height: 400,
-        color: Colors.amber,
-    
-        child: IconButton(
-          onPressed: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: ((context) => const Dummy())) 
-            );
-          },
-          icon: const Icon(Icons.golf_course),
-        ),
+      body: AnimatedBuilder(
+        animation: controller,
+        builder: (context, child) {
+          return Opacity(
+
+            opacity: animation['opacity'].value,
+
+            child: Container(
+              
+              width: 200,
+              height: animation['scale'].value * 400,
+              color: Colors.amber,
+              
+              child: IconButton(
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: ((context) => const Dummy())) 
+                  );
+                },
+                icon: const Icon(Icons.golf_course),
+              ),
+            ),
+          );
+        }
       ),
     );
   }

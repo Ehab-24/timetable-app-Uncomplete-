@@ -30,32 +30,25 @@ class TimeTableTile extends StatelessWidget{
 
       children: [
 
-        Container(
-        
-          margin: EdgeInsets.only(top: h * 0.058),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.pink,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: const [
-              // BoxShadow(
-              //   color: Colors.black38,
-              //   offset: Offset(5,5),
-              //   blurRadius: 10,
-              // )
-            ]
+        Positioned(
+          left: 0,
+          top: h * 0.058,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.pink,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: _WorkLoadBarHeaders()
           ),
-          child: _WorkLoadBarHeaders()
         ),
 
         Positioned(
-
-          right: 0,
-
+          left: 40,
           child: Container(
-        
+          
             decoration: Decorations.tableTileExternal,
-        
+          
             child: Material(
               
               type: MaterialType.transparency,
@@ -104,7 +97,7 @@ class TimeTableTile extends StatelessWidget{
                         ),
             
                         Spaces.vertical20,
-        
+          
                         _WorkLoadBars(table: table)
                       ],
                     ),

@@ -288,6 +288,8 @@ class _FocusedMenuHolder extends StatelessWidget {
       menuOffset: 12,
       onPressed: (){},
       openWithTap: true,
+      blurSize: 0,
+      animateMenuItems: false,
         
       menuItems: [
         

@@ -6,6 +6,13 @@ import 'Utils.dart';
 
 class Decorations{
 
+  static const BoxDecoration firstTableScreen = BoxDecoration(
+      gradient: RadialGradient(
+        colors: [Color.fromARGB(255, 156, 27, 216), Color.fromRGBO(69, 39, 160, 1)],
+        center: Alignment(0.85, 0.9),
+        radius: 3
+      )
+    );
   static BoxDecoration popUpCard = BoxDecoration(
       color: Colors.grey.shade200,
       borderRadius: BorderRadius.circular(8),
@@ -101,11 +108,53 @@ class Decorations{
       fit: BoxFit.cover
     ),
   );
+  static BoxDecoration reminderHeader(final double w) => BoxDecoration(
+    gradient: Gradients.primary,
+    borderRadius: BorderRadius.only(
+      bottomLeft: Radius.elliptical(w/3, 30), 
+      bottomRight: Radius.elliptical(w/3, 30), 
+    ),
+    boxShadow: const [
+      BoxShadow(
+        blurRadius: 10,
+        color: Colors.black54
+      )
+    ]
+  );
+  static BoxDecoration reminderTile = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(8),
+    boxShadow: const [
+      BoxShadow(
+        offset: Offset(4,4),
+        blurRadius: 6,
+        color: Colors.black45
+      )
+    ]
+  );
+
+
   static InputDecoration textFormField(String label, Color color) => InputDecoration(
     labelText: label,
     labelStyle: TextStyle(
       color: Utils.darken(color)
     ),
     contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+  );
+  static InputDecoration onboardingTextField(double w, double h) => InputDecoration(
+    hintText: 'Title',
+    hintStyle: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w900),
+    fillColor: const Color.fromRGBO(224, 224, 224, 1),
+    filled: true,
+    isDense: true,
+    contentPadding: EdgeInsets.symmetric(horizontal: w * 0.1, vertical: h * 0.05),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(20)
+    ),
+    errorStyle: TextStyle(
+      color: Colors.blueGrey.shade800,
+      fontSize: 14,
+      fontWeight: FontWeight.bold
+    )
   );
 }

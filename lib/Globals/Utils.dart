@@ -96,3 +96,22 @@ class Utils{
     return hslLight.toColor();
   }
 }
+
+List<InlineSpan> appBarHeader(String firstLetter, String restOfWord) => [
+    TextSpan(
+      text: firstLetter, 
+      style: const TextStyle(
+        fontSize: 48,
+        fontWeight: FontWeight.w500,
+        color: Colors.white
+      ),
+    ),
+    TextSpan(
+      text: restOfWord,
+      style: const TextStyle(
+        fontSize: 40,
+        color: Colors.white70,
+        fontWeight: FontWeight.bold
+      )
+    ),
+  ];

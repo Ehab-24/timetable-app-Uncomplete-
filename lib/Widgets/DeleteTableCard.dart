@@ -130,7 +130,7 @@ class _ActionsState extends State<_Actions> {
           onPressed: () {
             if(tableReader.tables.length == 1){
               Navigator.of(context).pop();
-              Utils.showErrorDialog(context, 'You must have atleast one table :(');
+              Utils.showErrorDialog(context, 'You must have atleast one table.');
               return;
             }
             tableReader.removeTable(widget.timeTable);

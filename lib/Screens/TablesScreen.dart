@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_sequence_animation/flutter_sequence_animation.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Globals/ColorsAndGradients.dart';
 import 'package:timetable_app/Globals/Utils.dart';
@@ -20,12 +21,23 @@ class TablesScreen extends StatefulWidget{
 class _TablesScreenState extends State<TablesScreen> {
 
   bool beginAnimation = false;
+  
+  late final PageController pageController;
 
   @override
   void initState() {
     delay();
+    pageController = PageController();
     super.initState();
   }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
+
+  int tableIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -34,83 +46,137 @@ class _TablesScreenState extends State<TablesScreen> {
     final double w = Utils.screenWidthPercentage(context, 1);
     final double h = Utils.screenHeightPercentage(context, 1);
     
-    return Scaffold(
+    return SafeArea(
+      
+      child: Scaffold(
+      
+        backgroundColor: Colors.grey.shade200,
     
-      backgroundColor: Colors.grey.shade200,
-
-      appBar: TableScreenAppBar(h: h),
+        body: Stack(
     
-      body: Stack(
-
-        clipBehavior: Clip.none,
-
-        children: [
-          
-          ListView.builder(
+          clipBehavior: Clip.none,
+    
+          children: [
             
-            physics: const PageScrollPhysics(),
+            Column(
+              children: [
+    
+                const TableScreenAppBar(),
 
-            itemCount: tableWatch.tables.length ,
-            itemBuilder: ((context, index) => 
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: w * 0.05,
-                vertical: h * 0.1
-              ),
-              child: AnimatedOpacity(
-        
-                duration: Durations.d500,
-                curve: Curves.easeInOut,
-                opacity: beginAnimation? 1: 0,
-        
-                child: TimeTableTile(
-                  table: tableWatch.tables[index]
-                )
-              ),
-            )
-            )
-          ),
-          
-          Positioned(
-            top: -10,
-            right: 20,
-            child: FloatingActionButton(
-              onPressed: (){
-                Utils.showCreateTableDialog(context);
-              },
-              child: const Icon(Icons.playlist_add, color: Color.fromRGBO(55, 71, 79, 1),),
+                Expanded(
+                  child: PageView.builder(
+                    controller: pageController,
+                    onPageChanged: ((index) => 
+                      setState(() {
+                        tableIndex = index;
+                      })
+                    ),
+                    itemCount: tableWatch.tables.length,
+                    itemBuilder: ((context, index) => 
+                      AnimatedOpacity(
+                        duration: Durations.d300,
+                        curve: Curves.easeInOut,
+                        opacity: beginAnimation? 1: 0,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: w * 0.05, top: h * 0.05),
+                          child: TimeTableTile(table: tableWatch.tables[index]),
+                        ))
+                    )
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+            
+            Positioned(
+              top: h * 0.38,
+              right: 20,
+              child: FloatingActionButton(
+                onPressed: (){
+                  Utils.showCreateTableDialog(context);
+                },
+                child: const Icon(Icons.playlist_add, color: Color.fromRGBO(55, 71, 79, 1),),
+              ),
+            ),
+          ],
+        ),
+      
+        floatingActionButton: const LinearFlowFAB(),
       ),
-  
-      floatingActionButton: const LinearFlowFAB(),
     );
   }
   
   Future<void> delay() async {
-    Future.delayed(Durations.d500, () {
+    Future.delayed(Durations.d800, () {
       setState(() {beginAnimation = true;});
     });
   }
 }
 
-class TableScreenAppBar extends StatelessWidget 
-  implements PreferredSizeWidget{
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  const TableScreenAppBar({
-    Key? key,
-    required this.h
-  }) : super(key: key);
-
-  final double h;
+class TableScreenAppBar extends StatefulWidget {
+  const TableScreenAppBar({super.key});
 
   @override
-  Size get preferredSize => Size.fromHeight(h * 0.4);
+  State<TableScreenAppBar> createState() => _TableScreenAppBarState();
+}
+
+class _TableScreenAppBarState extends State<TableScreenAppBar> 
+  with TickerProviderStateMixin {
+
+  late final AnimationController controller;
+  late final SequenceAnimation animation;
+
+  @override
+  void initState() {
+     controller = AnimationController(vsync: this, duration: Durations.d800);
+
+    animation = SequenceAnimationBuilder()
+    .addAnimatable(
+      animatable: Tween<double>(begin: 0.8, end: 1.1), 
+      from: Durations.d200, 
+      to: Durations.d600, 
+      tag: 'scale',
+      curve: Curves.easeOutCubic
+    )
+    .addAnimatable(
+      animatable: Tween<double>(begin: 1, end: 1.1), 
+      from: Durations.d500, 
+      to: Durations.d800, 
+      tag: 'scale2',
+      curve: Curves.easeInCubic
+    )
+    .addAnimatable(
+      animatable: Tween<double>(begin: 0, end: 1), 
+      from: Durations.zero, 
+      to: Durations.d600, 
+      tag: 'opacity',
+      curve: Curves.easeOutSine
+    )
+    .addAnimatable(
+      animatable: Tween<double>(begin: 0, end: 1), 
+      from: Durations.d500, 
+      to: Durations.d800, 
+      tag: 'opacity2',
+      
+    )
+    .animate(controller);
+
+    controller.forward();
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
 
+    final double h = Utils.screenHeightPercentage(context, 1);
     final double w = Utils.screenWidthPercentage(context, 1);
 
     return ClipRRect(
@@ -120,96 +186,79 @@ class TableScreenAppBar extends StatelessWidget
         bottomRight: Radius.elliptical(w/2, h * 0.05),
       ),
       
-      child: Container(
-    
-        decoration: const BoxDecoration(
-          gradient: Gradients.primary,
-        ),
-        child: Stack(
-    
-          children: [
-    
-            Positioned(
-              top: h * 0.12,
-              left: w * 0.4,
-              child: Transform.rotate(
-                angle: 29,
-                child: Icon(
-                  Icons.pages_rounded, 
-                  size: w * 0.15, 
-                  color: const Color.fromRGBO(214, 214, 214, 0.4),
-                ),
+      child: AnimatedBuilder(
+        animation: controller,
+        builder: (context, child) {
+          return Opacity(
+            opacity: animation['opacity'].value,
+            child: Container(
+              // width: w * animation['scale'].value,
+              height: h * 0.382 * animation['scale'].value / animation['scale2'].value,
+              decoration: const BoxDecoration(
+                gradient: Gradients.primary,
               ),
-            ),
-            Positioned(
-              top: h * 0.22,
-              left: w * 0.05,
-              child: Transform.rotate(
-                angle: 75,
-                child: Icon(
-                  Icons.pages_rounded, 
-                  size: w * 0.5, 
-                  color: const Color.fromRGBO(214, 214, 214, 0.4),
-                ),
-              ),
-            ),
-            Positioned(
-              top: h * 0.2,
-              left: w * 0.65,
-              child: Transform.rotate(
-                angle: 175,
-                child: Icon(
-                  Icons.pages_rounded, 
-                  size: w * 0.25, 
-                  color: const Color.fromRGBO(214, 214, 214, 0.4),
-                ),
-              ),
-            ),
-    
-            Positioned(
-              left: w * 0.32,
-              top: h * 0.27,
-              child: RichText(
-                text: const TextSpan(
+              child: Opacity(
+                opacity: animation['opacity2'].value,
+                child: Stack(
+                  
                   children: [
-                    TextSpan(
-                      text: 'M', 
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
+                  
+                    Positioned(
+                      top: h * 0.12,
+                      left: w * 0.4,
+                      child: Transform.rotate(
+                        angle: 29,
+                        child: Icon(
+                          Icons.pages_rounded, 
+                          size: w * 0.15, 
+                          color: const Color.fromRGBO(214, 214, 214, 0.4),
+                        ),
                       ),
                     ),
-                    TextSpan(
-                      text: 'y',
-                      style: TextStyle(
-                        fontSize: 36,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.bold
-                      )
-                    ),
-                    TextSpan(
-                      text: '  T', 
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
+                    Positioned(
+                      top: h * 0.22,
+                      left: w * 0.05,
+                      child: Transform.rotate(
+                        angle: 75,
+                        child: Icon(
+                          Icons.pages_rounded, 
+                          size: w * 0.5, 
+                          color: const Color.fromRGBO(214, 214, 214, 0.4),
+                        ),
                       ),
                     ),
-                    TextSpan(
-                      text: 'ables',
-                      style: TextStyle(
-                        fontSize: 36,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.bold
-                      )
+                    Positioned(
+                      top: h * 0.2,
+                      left: w * 0.65,
+                      child: Transform.rotate(
+                        angle: 175,
+                        child: Icon(
+                          Icons.pages_rounded, 
+                          size: w * 0.25, 
+                          color: const Color.fromRGBO(214, 214, 214, 0.4),
+                        ),
+                      ),
                     ),
-                  ]
-                )
-              ),
-            ), 
-          ],
-        )
+                  
+                    Positioned(
+                      left: w * 0.32,
+                      top: h * 0.27,
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            
+                            ...appBarHeader('M', 'y'),
+                            ...appBarHeader(' T', 'ables')
+                          ]
+                        )
+                      ),
+                    ), 
+                  ],
+                ),
+              )
+            ),
+          );
+        }
       ),
     );
   }

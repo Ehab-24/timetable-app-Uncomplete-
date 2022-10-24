@@ -12,11 +12,8 @@ import '../Globals/Reals.dart';
 class TimeTable{
 
   int? id;
-  // int color;
   String title;
-  // TimeOfDay minTime = const TimeOfDay(hour: 12, minute: 0),
-  //           maxTime = const TimeOfDay(hour: 12, minute: 0);
-
+  
   //Each list represents a day of week.
   List<List<TimeSlot>> timeSlots = List.generate(7, (index) => []);
 
@@ -84,7 +81,6 @@ class TimeTable{
 
   TimeTable({
     this.id,
-    // required this.color,
     required this.title,
   });
 

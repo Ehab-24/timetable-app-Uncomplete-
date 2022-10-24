@@ -16,21 +16,24 @@ class HomeScreen extends StatelessWidget {
 
     Table_pr tableWatch = Provider.of<Table_pr>(context);
 
-    return Container(
+    return SafeArea(
       
-      decoration: Decorations.homeImage,
-
       child: Container(
         
-        decoration: Decorations.homeVignette,
-
-        child: Scaffold(
+        decoration: Decorations.homeImage,
     
-          backgroundColor: Colors.transparent,
-        
-          body: HomeBody(homeTable: tableWatch.tables[0]),
+        child: Container(
+          
+          decoration: Decorations.homeVignette,
     
-          floatingActionButton: const LinearFlowFAB(),
+          child: Scaffold(
+      
+            backgroundColor: Colors.transparent,
+          
+            body: HomeBody(homeTable: tableWatch.tables[0]),
+      
+            floatingActionButton: const LinearFlowFAB(),
+          ),
         ),
       ),
     );
@@ -39,7 +42,7 @@ class HomeScreen extends StatelessWidget {
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-class HomeBody extends StatelessWidget {
+class HomeBody extends StatefulWidget {
   const HomeBody({
     Key? key,
     required this.homeTable
@@ -48,67 +51,102 @@ class HomeBody extends StatelessWidget {
   final TimeTable homeTable;
 
   @override
+  State<HomeBody> createState() => _HomeBodyState();
+}
+
+class _HomeBodyState extends State<HomeBody> {
+
+  bool animate = false;
+
+  @override
+  void initState() {
+    startAnimation();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     final int currentDay = DateTime.now().weekday - 1;
 
-    final TimeSlot currentSlot = homeTable.currentSlot(currentDay) ?? TimeSlot.zero(-1,-1).copyWith(title: 'None');
-    final TimeSlot nextSlot = homeTable.nextSlot(currentDay) ?? TimeSlot.zero(-1,-1).copyWith(title: 'None');
+    final TimeSlot currentSlot = widget.homeTable.currentSlot(currentDay) ?? TimeSlot.zero(-1,-1).copyWith(title: 'None');
+    final TimeSlot nextSlot = widget.homeTable.nextSlot(currentDay) ?? TimeSlot.zero(-1,-1).copyWith(title: 'None');
 
     return Center(
-      child: Column(
+      child: AnimatedOpacity(
 
-        mainAxisAlignment: MainAxisAlignment.center,
+        duration: Durations.d500,
+        opacity: animate? 1: 0,
 
-        children: [
-
-          Text(
-            'Current: ${currentSlot.title}',
-            style: const TextStyle(
-              color: Color.fromARGB(255, 205, 238, 219),
-              fontSize: 32,
-              wordSpacing: 10,
-              letterSpacing: 0.8,
-              fontWeight: FontWeight.w700,
-            ),
+        child: AnimatedPadding(
+      
+          duration: Durations.d300,
+          padding: EdgeInsets.only(
+            top: animate? 0: 30
           ),
-          Text(
-            currentSlot.title == 'None'
-            ? ''
-            : '${currentSlot.startTime.toString().substring(10,15)} - ${currentSlot.endTime.toString().substring(10,15)}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              wordSpacing: 10,
-              letterSpacing: 1.2,
-              fontWeight: FontWeight.w500,
-            ),
+      
+          child: Column(
+        
+            mainAxisAlignment: MainAxisAlignment.center,
+        
+            children: [
+        
+              Text(
+                'Current: ${currentSlot.title}',
+                style: const TextStyle(
+                  color: Color.fromARGB(255, 205, 238, 219),
+                  fontSize: 32,
+                  wordSpacing: 10,
+                  letterSpacing: 0.8,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                currentSlot.title == 'None'
+                ? ''
+                : '${currentSlot.startTime.toString().substring(10,15)} - ${currentSlot.endTime.toString().substring(10,15)}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  wordSpacing: 10,
+                  letterSpacing: 1.2,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+        
+              Spaces.vertical40,
+        
+              Text(
+                'Upcoming: ${nextSlot.title}',
+                style: const TextStyle(
+                  color: Color.fromARGB(255, 205, 238, 219),
+                  fontSize: 24,
+                  letterSpacing: 0.7,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                nextSlot.title == 'None'
+                ? ''
+                : '${nextSlot.startTime.toString().substring(10,15)} - ${nextSlot.endTime.toString().substring(10,15)}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  letterSpacing: 1.2,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-
-          Spaces.vertical40,
-
-          Text(
-            'Upcoming: ${nextSlot.title}',
-            style: const TextStyle(
-              color: Color.fromARGB(255, 205, 238, 219),
-              fontSize: 24,
-              letterSpacing: 0.7,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          Text(
-            nextSlot.title == 'None'
-            ? ''
-            : '${nextSlot.startTime.toString().substring(10,15)} - ${nextSlot.endTime.toString().substring(10,15)}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              letterSpacing: 1.2,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+        ),
       ),
     );
+  }
+  
+  Future<void> startAnimation() async {
+    await Future.delayed(Durations.d300);
+    setState(() {
+      animate = true;
+    });
   }
 }

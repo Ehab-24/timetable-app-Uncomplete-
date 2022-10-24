@@ -14,7 +14,8 @@ class Reminder{
   static Reminder get zero =>
     Reminder(
       dateTime: DateTime(DateTime.now().year - 5),
-      title: ''
+      title: '',
+      description: ''
     );
 
   Reminder({

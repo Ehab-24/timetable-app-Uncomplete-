@@ -6,7 +6,6 @@ import 'package:timetable_app/Classes/Reminder.dart';
 import 'package:timetable_app/Classes/TimeSlot.dart';
 import 'package:timetable_app/Classes/TimeTable.dart';
 import 'package:timetable_app/Globals/enums.dart';
-import 'package:timetable_app/Miscellaneous/ExtansionMethods.dart';
 
 
 class Day_pr extends ChangeNotifier{
@@ -36,6 +35,30 @@ class Screen_pr extends ChangeNotifier{
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+
+
+class Ticker_pr extends ChangeNotifier{
+
+  int value = 0;
+
+  void set(int val){
+    value = val;
+    notifyListeners();
+  }
+
+  void increment(){
+    value++;
+    notifyListeners();
+  }
+
+  void reset(){
+    value = 0;
+    notifyListeners();
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
 
 class Reminder_pr extends ChangeNotifier{
 
@@ -69,6 +92,17 @@ class Reminder_pr extends ChangeNotifier{
     reminders[index] = rem;
 
     notifyListeners();
+  }
+
+  void update(Reminder rem){
+    for(int i = 0; i < reminders.length; i++){
+      if(reminders[i].id == rem.id){
+        reminders[i] = rem;
+        notifyListeners();
+        return;
+      }
+    }
+    throw('Reminder NOT FOUND! - id: ${rem.id}');
   }
 
   void remove(Reminder rem){
@@ -140,15 +174,6 @@ class Table_pr extends ChangeNotifier{
   void addSlot(TimeSlot ts){
     
     int index = indexOfParent(ts.parentId);
-
-    // if(ts.startTime.hour < tables[index].minTime.hour
-    // || ts.startTime.hour == tables[index].minTime.hour && ts.startTime.minute < tables[index].minTime.minute){
-    //   tables[index].minTime = ts.startTime;
-    // }
-    // else if(ts.endTime.hour > tables[index].maxTime.hour
-    // || ts.endTime.hour == tables[index].maxTime.hour && ts.endTime.minute > tables[index].maxTime.minute){
-    //   tables[index].maxTime = ts.endTime;
-    // }
 
     tables[index].add(ts);
     notifyListeners();

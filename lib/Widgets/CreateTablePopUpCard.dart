@@ -43,7 +43,14 @@ class CreateTableCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
             
-                  const SizedBox(height: 40,),
+                  Spaces.vertical40,
+
+                  const Text(
+                    'Add a new Time Table.',
+                    style: TextStyles.b1,
+                  ),
+
+                  Spaces.vertical40,
                 
                   TextFormField(
                     onSaved: (value) {

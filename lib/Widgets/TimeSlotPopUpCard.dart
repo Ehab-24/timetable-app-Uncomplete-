@@ -276,7 +276,7 @@ class _TimerRow extends StatelessWidget {
                 
         Text(
           initialValue.toString().substring(10,15),
-          style: TextStyles.b3
+          style: TextStyles.b3()
         ),
                 
         const Spacer(flex: 3),

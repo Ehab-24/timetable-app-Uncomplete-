@@ -12,6 +12,17 @@ class ErrorCard extends StatelessWidget {
 
   final String content;
 
+  final _circularIndicator = const Positioned(
+    top: -30,
+    child: CircleAvatar(
+      foregroundColor: Color.fromRGBO(238, 238, 238, 1),
+      backgroundColor: Color.fromARGB(255, 218, 8, 71),
+      radius: 30,
+      child: Icon(Icons.nearby_error, size: 30,),
+    ),
+  );
+
+  
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -35,7 +46,6 @@ class ErrorCard extends StatelessWidget {
             child: Column(
           
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
 
               children: [
 
@@ -52,25 +62,24 @@ class ErrorCard extends StatelessWidget {
 
                 Text(
                   content,
-                  style: const TextStyle(
-                    color: Color.fromRGBO(55, 71, 79, 1),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400
-                  ),
+                  style: TextStyles.b4(color: Colors.blueGrey.shade800),
                   textAlign: TextAlign.center,
                 ),
 
                 const SizedBox(height: 20),
                 
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  style: ButtonStyles.closeButton(Colors.blueGrey.shade800),
-                  // style: ButtonStyles.closeButton,
-                  child: const Text(
-                    'Close',
-                    style: TextStyle(color: Color.fromRGBO(55, 71, 79, 1)),
+                Align(
+                  alignment: Alignment.centerRight,
+                  
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ButtonStyles.closeButton(Colors.blueGrey.shade800),
+                    child: const Text(
+                      'Close',
+                      style: TextStyle(color: Color.fromRGBO(55, 71, 79, 1)),
+                    ),
                   ),
                 )
               ],
@@ -78,15 +87,7 @@ class ErrorCard extends StatelessWidget {
           ),
           
           //Circular Indicator
-          const Positioned(
-            top: -30,
-            child: CircleAvatar(
-              foregroundColor: Color.fromRGBO(238, 238, 238, 1),
-              backgroundColor: Color.fromARGB(255, 218, 8, 71),
-              radius: 30,
-              child: Icon(Icons.nearby_error, size: 30,),
-            ),
-          )
+          _circularIndicator
         ],
       ),
     );
