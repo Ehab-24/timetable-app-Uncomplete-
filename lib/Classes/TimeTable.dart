@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:timetable_app/Classes/TimeSlot.dart';
 import 'package:timetable_app/Globals/enums.dart';
-import 'package:timetable_app/Miscellaneous/ExtansionMethods.dart';
+import 'package:timetable_app/Miscellaneous/ExtensionMethods.dart';
 
 import '../Globals/Reals.dart';
 
@@ -13,9 +13,17 @@ class TimeTable{
 
   int? id;
   String title;
-  
+
   //Each list represents a day of week.
   List<List<TimeSlot>> timeSlots = List.generate(7, (index) => []);
+
+  int get totalSlots {
+    int ans = 0;
+    for(int i = 0; i < timeSlots.length; i++){
+      ans += timeSlots[i].length;
+    }
+    return ans;
+  }
 
   double get dayLoadAvg =>
     weekLoad / 7;
@@ -106,19 +114,11 @@ class TimeTable{
   }
 
   bool remove(TimeSlot ts){
+    return timeSlots[ts.day].remove(ts);
+  }
 
-    bool didRemove = timeSlots[ts.day].remove(ts);
-
-    //If the removed time slot held 'minTime', we search for a new minTime. 
-    // if(ts.startTime == minTime){
-    //   minTime = findMin();
-    // }
-    // //If the removed time slot held 'maxTime', we search for a new maxTime. 
-    // if(ts.endTime == maxTime){
-    //   maxTime = findMax();
-    // }
-
-    return didRemove;
+  void clear(){
+    timeSlots = List.generate(7, (index) => []);
   }
 
   void sort(int day){

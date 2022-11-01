@@ -1,11 +1,19 @@
 
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:timetable_app/Globals/ColorsAndGradients.dart';
 import 'package:timetable_app/Globals/Decorations.dart';
+import 'package:timetable_app/Globals/Reals.dart';
+import 'package:timetable_app/Globals/Utils.dart';
+import 'package:timetable_app/Widgets/Helpers.dart';
 
 import '../Classes/Reminder.dart';
 import '../Databases/LocalDatabase.dart';
+import '../Databases/ServicesPref.dart';
 import '../Globals/Providers.dart';
 import '../Globals/Styles.dart';
 import '../Globals/enums.dart';
@@ -27,6 +35,7 @@ class ReminderTile extends StatefulWidget {
 class _ReminderTileState extends State<ReminderTile> {
 
   late final Reminder_pr remReader;
+  bool isPressed = false;
 
   @override
   void initState() {
@@ -37,167 +46,88 @@ class _ReminderTileState extends State<ReminderTile> {
   @override
   Widget build(BuildContext context) {
 
-    final _createEditReminderScreen = PageRouteBuilder(
-      pageBuilder: ((context, animation, secondaryAnimation) => 
-        EditReminderScreen(reminder: widget.reminder)),
-      transitionDuration: Durations.d400,
-      transitionsBuilder: ((context, animation, secondaryAnimation, child) { 
+    final Color_pr colorWatch = context.watch<Color_pr>();
 
-        final tween = Tween(begin: const Offset(1.0, 0.0), end: Offset.zero);
-        final curvedAnimation = CurvedAnimation(parent: animation, curve: Curves.easeOutQuint);
+    return PhysicalModel(
 
-        return SlideTransition(
-          position: tween.animate(curvedAnimation),
-          child: child,
-        );
-      })
-    );
+      color: Colors.transparent,
+      shadowColor: colorWatch.shadow,
+      elevation: ELEVATION,
+      borderRadius: BorderRadius.circular(80),
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        GestureDetector(
-
-          onDoubleTap: (){},
-          onTap: (){
-            Navigator.of(context).push(
-              _createEditReminderScreen
-            );
-          },
-
-          child: Container(
-            
-            margin: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: Decorations.reminderTile,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(18,12,24,8),
+      child: Material(
+        type: MaterialType.transparency,
+        child: Padding(
+          padding: MARGIN,
+          child: InkWell(
+      
+            onTap: (){
+              Navigator.of(context).push(
+                Utils.buildFadeThroughTransition(EditReminderScreen(reminder: widget.reminder,), colorWatch.background)
+              );
+            },
+            borderRadius: BorderRadius.circular(20),
+            splashColor: colorWatch.splash,
+            highlightColor: colorWatch.splash,
+      
+            child: Ink(
+          
+              decoration: Decorations.reminderTile(colorWatch.onBackground),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+              
               child: Column(
-        
+                
                 crossAxisAlignment: CrossAxisAlignment.start,
-        
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
+                  
+                  Center(
                     child: Text(
-                      widget.reminder.title,
-                      style: TextStyles.b1,
+                      DateFormat('EEE, M-d-y').format(widget.reminder.dateTime),
+                      style: TextStyles.bk4(Prefs.isDarkMode? Colors.white70: Colors.black38),
                     ),
                   ),
-        //wief wefuweouf weof oew fu sifu sfsuf sif sufosiuf yf iusy fiuys fiyw fy feur oeru goerug eori gueorgweof oew fu sifu sfsuf sif sufosiuf yf iusy fiuys fiyw fy feur oeru goerug eori gueorgweof oew fu sifu sfsuf sif sufosiuf yf iusy fiuys fiyw.'
+            
+                  const HorzDividerMini(),
+                  
+                  Spaces.vertical10,
+            
+                  Text(
+                    widget.reminder.title,
+                    style: TextStyles.b1(colorWatch.foreground),
+                  ),
+                  Spaces.vertical20,
                   Text(
                     widget.reminder.description,
-                    style: TextStyles.b4(color: const Color.fromRGBO(55, 71, 79, 1)),
+                    style: TextStyles.b4(colorWatch.foreground),
                   ),
-        
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: const Icon(Icons.delete_forever),
-                      onPressed: () async {
-                        await LocalDatabase.instance.deleteReminder(widget.reminder.id!);
-                        remReader.remove(widget.reminder);
-                      },
-                    ),
+                
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      
+                      Text(
+                        DateFormat('K : mm a').format(widget.reminder.dateTime),
+                        style: TextStyles.toast(colorWatch.foreground.withOpacity(0.75), background: colorWatch.onBackground),
+                      ),
+
+                      const Spacer(),
+                      
+                      IconButton(
+                        tooltip: 'Delete',
+                        icon: Icon(Icons.delete_forever, color: colorWatch.foreground,),
+                        onPressed: () async {
+                          await LocalDatabase.instance.deleteReminder(widget.reminder.id!);
+                          remReader.remove(widget.reminder);
+                        },
+                      ),
+                    ],
                   )
                 ],
               ),
             ),
           ),
         ),
-
-        Positioned(
-          right: 16,
-          top: -6,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.pink,
-              borderRadius: BorderRadius.circular(8)
-            ),
-            child: Text(
-              DateFormat.yMEd().format(widget.reminder.dateTime),
-              style: TextStyles.b3(color: Colors.white),
-            ),
-          ),
-        )
-      ],
+      ),
     );
-    // return  Slidable(
-
-    //   endActionPane: ActionPane(
-
-    //     motion: const DrawerMotion(),
-    //     extentRatio: 0.3,
-    //     children: [
-    //       SlidableAction(
-    //         onPressed: (conetext) async {
-    //           await LocalDatabase.instance.deleteReminder(widget.reminder.id!);
-    //           remReader.remove(widget.reminder);
-    //         },
-    //         backgroundColor: const Color(0xFFFE4A49),
-    //         foregroundColor: Colors.white,
-    //         icon: Icons.delete,
-    //         label: 'Remove',
-    //       ),
-    //     ],
-    //   ),
-
-    //   startActionPane: ActionPane(
-
-    //     motion: const DrawerMotion(),
-    //     extentRatio: 0.35,
-
-    //     children: [
-    //       SlidableAction(
-    //         onPressed: (conetext) async {
-    //           //TODO:
-    //         },
-    //         backgroundColor: const Color.fromARGB(255, 37, 201, 16),
-    //         foregroundColor: Colors.white,
-    //         icon: Icons.download_done_rounded,
-    //         label: 'Done',
-    //       ),
-    //     ],
-    //   ),
-
-    //   child: Container(
-
-    //     clipBehavior: Clip.hardEdge,
-    //     padding: const EdgeInsets.symmetric(vertical: 16),
-    //     decoration: BoxDecoration(
-    //       color: Colors.white,
-    //       borderRadius: BorderRadius.circular(8)
-    //     ),
-
-    //     child: ListTile(
-          
-    //       tileColor: Colors.white,
-    //       title: Padding(
-    //         padding: const EdgeInsets.only(bottom: 16),
-    //         child: Row(
-    //           children: [
-    //             Text(
-    //               widget.reminder.title,
-    //               style: TextStyles.b1,
-    //             ),
-    //             const Spacer(),
-    //             Text(
-    //               DateFormat.yMEd().format(widget.reminder.dateTime),
-    //               style: TextStyles.b3,
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //       subtitle: Text(
-    //         '${widget.reminder.description} wief wefuweouf weof oew fu sifu sfsuf sif sufosiuf yf iusy fiuys fiyw fy feur oeru goerug eori gueorgweof oew fu sifu sfsuf sif sufosiuf yf iusy fiuys fiyw fy feur oeru goerug eori gueorgweof oew fu sifu sfsuf sif sufosiuf yf iusy fiuys fiyw.',
-    //         // style: TextStyles.b4(color: const Color.fromRGBO(55, 71, 79, 1)),
-    //         style: TextStyles.b4(color: Colors.blueGrey.shade800),
-    //       ),
-    //       shape: RoundedRectangleBorder(
-    //         borderRadius: BorderRadius.circular(8)
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }

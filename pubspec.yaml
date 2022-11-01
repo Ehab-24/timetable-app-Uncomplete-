@@ -40,6 +40,8 @@ dependencies:
   
   sliver_tools: ^0.2.8
 
+  flutter_inset_box_shadow: ^1.0.8
+
   flex_with_main_child: ^0.2.1
 
   page_transition: ^2.0.9
@@ -116,6 +118,10 @@ flutter:
     - family: VarelaRound
       fonts:
         - asset: assets/fonts/VarelaRound-Regular.ttf
+          weight: 400
+    - family: Ultra
+      fonts:
+        - asset: assets/fonts/Ultra-Regular.ttf
           weight: 400
     # - family: Trajan Pro
     #   fonts:

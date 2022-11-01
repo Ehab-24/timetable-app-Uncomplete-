@@ -2,7 +2,7 @@
 // ignore_for_file: unnecessary_this
 
 import 'package:timetable_app/Globals/enums.dart';
-import 'package:timetable_app/Miscellaneous/ExtansionMethods.dart';
+import 'package:timetable_app/Miscellaneous/ExtensionMethods.dart';
 
 class Reminder{
 
@@ -13,7 +13,7 @@ class Reminder{
 
   static Reminder get zero =>
     Reminder(
-      dateTime: DateTime(DateTime.now().year - 5),
+      dateTime: DateTime.now(),
       title: '',
       description: ''
     );
@@ -37,6 +37,12 @@ class Reminder{
     id: id?? this.id,
   );
 
+  bool isSameAs(Reminder other){
+    return this.title == other.title
+    && this.dateTime.isSameMinuteAs(other.dateTime)
+    && this.description == other.description;
+  }
+
   Map<String, Object?> toJson(){
     return {
       ReminderFields.dateTime: dateTime.toIso8601String(),
@@ -44,6 +50,24 @@ class Reminder{
       ReminderFields.title: title,
       ReminderFields.id: id
     };
+  }
+
+  static sortAll(List<Reminder> reminders){
+    
+    bool bubbling = true; int loops = 0;
+    while(bubbling){
+      bubbling = false;
+      for(int i = 0; i + 1 < reminders.length - loops; i++){
+        if(reminders[i].dateTime.isAfter(reminders[i + 1].dateTime)){
+          Reminder holder = reminders[i];
+          reminders[i] = reminders[i + 1];
+          reminders[i + 1] = holder;
+
+          bubbling = true;
+        }
+      }
+      loops++;
+    }
   }
 
   static Reminder fromJson(Map<String, Object?> json) =>

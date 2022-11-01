@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Globals/ColorsAndGradients.dart';
 import 'package:timetable_app/Globals/Decorations.dart';
+import 'package:timetable_app/Globals/Styles.dart';
 import 'package:timetable_app/Globals/Utils.dart';
 import 'package:timetable_app/Globals/enums.dart';
+import 'package:timetable_app/Widgets/Helpers.dart';
 import 'package:timetable_app/Widgets/LinearFlowFAB.dart';
 
 import '../Classes/Reminder.dart';
@@ -23,7 +25,7 @@ class RemindersScreen extends StatefulWidget{
 
 class _RemindersScreenState extends State<RemindersScreen> {
 
-  late final Timer timer; 
+  late final Timer timer;
   int ticker = 0;
 
   @override
@@ -45,42 +47,51 @@ class _RemindersScreenState extends State<RemindersScreen> {
   @override
   Widget build(BuildContext context) {
 
-    final double h = Utils.screenHeightPercentage(context, 1);
-    final w = Utils.screenWidthPercentage(context, 1);
+    final Color_pr colorWatch = context.watch<Color_pr>();
 
     return SafeArea(
 
       child: Scaffold(
-        
-        backgroundColor: Colors.grey.shade200,
-    
-        body: Stack(
-          children: [
-            
-            RemindersListView(
-              animate: ticker > 6,
-            ),
-            
-            ReminderHeader(
-              animate1: ticker > 1,
-              animate2: ticker > 6,
-            ),
-          ],
-        ),
-    
+
+        backgroundColor: colorWatch.background,
+
         floatingActionButton: const LinearFlowFAB(),
-      ),
+
+        body: SingleChildScrollView(
+
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+          
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              const BackgroundText(title: 'Reminders'),
+
+              ReminderHeader(animate: ticker > 2),
+
+              Spaces.vertical60,
+
+              RemindersList(animate: ticker > 5),
+
+              Center(child: _AddButton())
+            ],
+          ),
+        ),
+      )
     );
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class RemindersListView extends StatelessWidget {
-  const RemindersListView({
-    Key? key,
+
+class RemindersList extends StatelessWidget{
+
+  const RemindersList({
+    super.key,
     required this.animate
-  }) : super(key: key);
+  });
 
   final bool animate;
 
@@ -89,69 +100,53 @@ class RemindersListView extends StatelessWidget {
 
     final Reminder_pr remWatch = context.watch<Reminder_pr>();
 
-    final double h = Utils.screenHeightPercentage(context, 1);
-
-    final _createEditReminderScreen = PageRouteBuilder(
-      pageBuilder: ((context, animation, secondaryAnimation) => 
-        EditReminderScreen(reminder: Reminder.zero, isFirst: true,)
-      ),
-      transitionDuration: Durations.d400,
-      transitionsBuilder: ((context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0);
-        const end = Offset.zero;
-        const curve = Curves.easeOutQuint;
-
-        final tween = Tween(begin: begin, end: end);
-        final curvedAnimation = CurvedAnimation(
-          parent: animation,
-          curve: curve,
-        );
-
-        return SlideTransition(
-          position: tween.animate(curvedAnimation),
-          child: child,
-        );
-      })
-    );
-
     return AnimatedOpacity(
-      duration: Durations.d300,
+
+      duration: Durations.d600,
       opacity: animate? 1: 0,
-      child: AnimatedPadding(
-        duration: Durations.d200,
-        padding: EdgeInsets.only(
-          left: animate? 20: 0,
-          right: animate? 20: 40,
+
+      child: AnimatedSlide(
+    
+        duration: Durations.d500,
+        curve: Curves.easeOutQuint,
+        offset: Offset(animate? 0: 0.3, 0),
+    
+        child: Column(
+    
+          children: remWatch.reminders.map((reminder)
+            => Padding(
+                padding: const EdgeInsets.only(bottom: 60),
+                child: ReminderTile(reminder: reminder),
+            )).toList(),
         ),
-        child: ListView.builder(  
-          itemCount: remWatch.reminders.length + 2,
-          itemBuilder: ((context, index) =>
-          index == 0
-          ? Spaces.vertical(h * 0.24)
-          : index == remWatch.reminders.length + 1
-          ? Padding(
-            padding: EdgeInsets.only(bottom: h * 0.04),
-            child: Material(
-              type: MaterialType.transparency,
-              child: IconButton(
-                onPressed: (){
-                  Navigator.of(context).push(_createEditReminderScreen);
-                },
-                splashRadius: 48,
-                splashColor: Colors.black26,
-                highlightColor: Colors.black26,
-                icon: const Icon(
-                  Icons.add, size: 36, color: Color.fromRGBO(55, 71, 79, 1),
-                ),
-              ),
-            ),
-          )
-          : Padding(
-            padding: const EdgeInsets.only(bottom: 60),
-            child: ReminderTile(reminder: remWatch.reminders[index - 1]),
-          )     
-          ),
-        ),
+      ),
+    );
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+class _AddButton extends StatelessWidget {
+  _AddButton({
+    Key? key,
+  }) : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+
+    final Color_pr colorWatch = context.watch<Color_pr>();
+
+    return IconButton(
+      onPressed: (){
+        Navigator.of(context).push(
+          Utils.buildFadeThroughTransition(const EditReminderScreen(), colorWatch.background)
+        );
+      },
+      splashRadius: 48,
+      tooltip: 'Add reminder',
+      icon: Icon(
+        Icons.add, size: 36, color: colorWatch.foreground,
       ),
     );
   }
@@ -162,67 +157,48 @@ class RemindersListView extends StatelessWidget {
 class ReminderHeader extends StatelessWidget {
   const ReminderHeader({
     Key? key,
-    required this.animate1,
-    required this.animate2
+    required this.animate,
   }) : super(key: key);
 
-  final bool animate1;
-  final bool animate2;
+  final bool animate;
 
   @override
   Widget build(BuildContext context) {
 
-    final double h = Utils.screenHeightPercentage(context, 1);
-    final double w = Utils.screenWidthPercentage(context, 1);
+    final Color_pr colorWatch = context.watch<Color_pr>();
 
-    return AnimatedContainer(
+    return AnimatedOpacity(
+
+      opacity: animate? 1: 0,
+      duration: Durations.d600,
+
+      child: AnimatedSlide(
+    
+        duration: Durations.d500,
+        curve: Curves.easeOutQuint,
+        offset: Offset(0, animate? 0: -0.3),
+    
+        child: PhysicalModel(
       
-      duration: Durations.d500,
-      curve: Curves.easeInOutQuint,
-      height: animate1
-      ? h * 0.146 : 0,
-      alignment: const Alignment(0,-0.2),
-      clipBehavior: Clip.hardEdge,
-      margin: EdgeInsets.symmetric(horizontal: animate1 ? 0: w),
-      decoration: Decorations.reminderHeader(w),
+          color: Colors.transparent,
+          shadowColor: colorWatch.shadow_alt,
+          elevation: 16,
+          borderRadius: BorderRadius.circular(80),
       
-      child: AnimatedOpacity(
-        duration: Durations.d200,
-        opacity: animate2
-        ? 1 : 0,
+          child: Container(
+            
+            width: double.infinity,
+            height: 120,
+            alignment: const Alignment(0, -0.3),
+            decoration: Decorations.decoratedContainer,
         
-        child: Stack(
-
-          clipBehavior: Clip.none,
-          children: [
-      
-            Positioned(
-              top: -30,
-              right: -80,
-              child: Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.rotationZ(5.7),
-                child: const Icon(Icons.notifications_active, size: 80, color: Color.fromRGBO(214, 214, 214, 0.4)))
-            ),
-      
-            const Positioned(
-              top: -30,
-              left: -78,
-              child: Icon(
-                Icons.timelapse_rounded, 
-                size: 120,
-                color: Color.fromRGBO(214, 214, 214, 0.4)
-              ),
-            ),
-      
-            RichText(
-              text: TextSpan(
-                children: appBarHeader('R', 'eminders')
-              )
-            )
-          ],
+            // child: Text(
+            //   'Reminders',
+            //   style: TextStyles.bk1(),
+            // ),
+          ),
         ),
-      )
+      ),
     );
   }
 }

@@ -140,7 +140,7 @@ class LocalDatabase {
 
     final db = await instance.database;
 
-    return db.update(
+    return await db.update(
       Tables.slotsTable,
       timeSlot.toJson(),
       where: '${TimeSlotFields.id} = ?',
@@ -172,15 +172,15 @@ class LocalDatabase {
     return table.copyWith(id: id);
   }
 
-  Future<int> updateTimeTable(TimeTable newTable) async {
+  Future<int> updateTimeTable(TimeTable table) async {
 
     final db = await instance.database;
 
     return await db.update(
-      Tables.timeTablesTable, 
-      newTable.toJson(),
+      Tables.timeTablesTable,
+      table.toJson(),
       where: '${TimeTableFields.id} = ?',
-      whereArgs: [newTable.id],
+      whereArgs: [table.id], 
     );
   }
 
@@ -240,14 +240,14 @@ class LocalDatabase {
     return timeTables;
   }
 
-  Future<int> clearTimeTable(int parent) async{
+  Future<int> clearTimeTable(int tableId) async{
     final db = await instance.database;
 
     return await db.rawDelete('''
   DELETE FROM ${Tables.slotsTable}
   WHERE ${TimeSlotFields.parentId} = ?
   ''',
-  [parent]);
+  [tableId]);
   }
 
   /*  ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ */

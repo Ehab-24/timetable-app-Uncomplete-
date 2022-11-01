@@ -1,58 +1,151 @@
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, no_leading_underscores_for_local_identifiers
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:timetable_app/Globals/Decorations.dart';
+import 'package:provider/provider.dart';
+import 'package:timetable_app/Globals/ColorsAndGradients.dart';
+import 'package:timetable_app/Globals/Providers.dart';
+import 'package:timetable_app/Globals/Reals.dart';
 import 'package:timetable_app/Globals/Styles.dart';
+import 'package:timetable_app/Globals/enums.dart';
 
 import '../Classes/TimeSlot.dart';
 import '../Globals/Utils.dart';
-import '../Globals/enums.dart';
+import 'TimeSlotScreen.dart';
 
 
-class AnimatedTimeSlotTile extends StatelessWidget {
-  const AnimatedTimeSlotTile({
+class TimeSlotTile extends StatelessWidget {
+  const TimeSlotTile({
     Key? key,
-    required this.beginAnimation,
     required this.timeSlot,
     required this.color
   }) : super(key: key);
 
-  final bool beginAnimation;
   final TimeSlot timeSlot;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
 
-    final double h = Utils.screenHeightPercentage(context,1);
-    final double w = Utils.screenWidthPercentage(context,1);
+    final Color_pr colorWatch = context.watch<Color_pr>();
 
-    return AnimatedPadding(
+    return Row(
+      children: [
 
-      duration: Durations.d300,
-      curve: Curves.decelerate,
+        Text(
+          '${timeSlot.span.toString()} hr',
+          style: TextStyles.b4(colorWatch.foreground.withOpacity(0.5)),
+        ),
+        
+        Spaces.horizontal(4),
 
-      padding: EdgeInsets.only(
-        left: beginAnimation
-        ? w * 0.2: w * 0.15,
-        right: beginAnimation
-        ? w * 0.1: w * 0.15,
-        top: h * 0.06
-      ),
+        Container(height: 2, width: 20, color: colorWatch.foreground.withOpacity(0.5)),
 
-      child: AnimatedOpacity(
+        Spaces.horizontal(4),
+
+        Expanded(
+          child: _MainTile(timeSlot: timeSlot)
+        ),
+      ],
+    );
+  }
+}
+
+class _MainTile extends StatelessWidget {
+  const _MainTile({
+    Key? key,
+    required this.timeSlot,
+  }) : super(key: key);
+
+  final TimeSlot timeSlot;
+
+  @override
+  Widget build(BuildContext context) {
+
+    final Color_pr colorWatch = context.watch<Color_pr>();
+
+    return PhysicalModel(
+    
+      color: Colors.transparent,
+      shadowColor: colorWatch.shadow,
+      elevation: ELEVATION,
+      borderRadius: BORDER_RADIUS,
+    
+      child: Material(
+        type: MaterialType.transparency,
+        clipBehavior: Clip.hardEdge,
+        borderRadius: BorderRadius.circular(8),
+        child: InkWell(
       
-        duration: beginAnimation
-        ? Durations.d300
-        : const Duration(seconds: 0),
+          borderRadius: BorderRadius.circular(8),
+          splashColor: colorWatch.splash,
+          highlightColor: colorWatch.splash,
+
+          onTap: (){
+          Navigator.of(context).push(
+            Utils.buildFadeThroughTransition( 
+              TimeSlotScreen(timeSlot: timeSlot, isfirst: false, color: Colors.pink),
+              colorWatch.background
+            )
+          );
+        },
+        onLongPress: (){
+          Utils.showDeleteDialog(context, timeSlot);
+        },
       
-        curve: Curves.easeInOut,
-        opacity: beginAnimation? 1: 0,
-      
-        child: TimeSlotTile(
-          timeSlot: timeSlot, 
-          color: color,
+        child: Ink(
+          padding: const EdgeInsets.only(left: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: colorWatch.onBackground
+          ),
+          child: Row(
+            children: [
+              Column(
+                children: [
+                  Text(
+                    timeSlot.title,
+                    style: TextStyles.h2light(colorWatch.foreground),
+                  ),
+                  Text(
+                    timeSlot.subtitle,
+                    style: TextStyles.b4(colorWatch.foreground),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  )
+                ],
+              ),
+          
+              const Spacer(),
+          
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                decoration: const BoxDecoration(gradient: Gradients.primary),
+                
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: timeSlot.startTime.format(context),
+                        style: TextStyles.bk4(colorWatch.background),
+                      ),
+                      TextSpan(
+                        text: '\n\nto\n\n',
+                        style: TextStyles.h8(colorWatch.background)
+                      ),
+                      TextSpan(
+                        text: timeSlot.endTime.format(context),
+                        style: TextStyles.bk4(colorWatch.background),
+                      ),
+                    ]
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
         ),
       ),
     );
@@ -62,101 +155,96 @@ class AnimatedTimeSlotTile extends StatelessWidget {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-class TimeSlotTile extends StatelessWidget {
-  TimeSlotTile({
-    Key? key,
-    required this.timeSlot,
-    required this.color,
-  }) : super(key: key);
+// class TimeSlotTile extends StatelessWidget {
+//   TimeSlotTile({
+//     Key? key,
+//     required this.timeSlot,
+//     required this.color,
+//   }) : super(key: key);
 
-  final TimeSlot timeSlot;
-  final Color color;
+//   final TimeSlot timeSlot;
+//   final Color color;
 
-  final GlobalKey<FormState>formKey = GlobalKey<FormState>();
+//   final GlobalKey<FormState>formKey = GlobalKey<FormState>();
 
-  @override
-  Widget build(BuildContext context) {
+//   @override
+//   Widget build(BuildContext context) {
     
-    return Column(
+//     return Column(
 
-      crossAxisAlignment: CrossAxisAlignment.end,
+//       crossAxisAlignment: CrossAxisAlignment.end,
 
-      children: [
+//       children: [
 
-        Material(
+//         Material(
 
-          elevation: 10,
-          shadowColor: Colors.black,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              bottomRight: Radius.circular(10)
-            )
-          ),
+//           elevation: 10,
+//           shadowColor: Colors.black,
+//           shape: const RoundedRectangleBorder(
+//             borderRadius: BorderRadius.only(
+//               topLeft: Radius.circular(16),
+//               bottomRight: Radius.circular(10)
+//             )
+//           ),
 
-          clipBehavior: Clip.hardEdge,
+//           clipBehavior: Clip.hardEdge,
 
-          child: ListTile(
+//           child: ListTile(
 
-            onTap: (){
-              Utils.showEditDialog(context, timeSlot, color: color);
-            },
-            onLongPress: (){
-              Utils.showDeleteDialog(context, timeSlot);
-            },
+
           
-            title: Text(
-              timeSlot.title,
-              style: TextStyles.h6(Utils.darken(color)),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+//             title: Text(
+//               timeSlot.title,
+//               style: TextStyles.h6(Utils.darken(color)),
+//               maxLines: 1,
+//               overflow: TextOverflow.ellipsis,
+//             ),
           
-            subtitle: Text(
-              '${timeSlot.subtitle}iafu ef oeufeyf ieuyf iuyewf e fiuyef weyf iwe fyw efy wieuf yi ef',
-              style: TextStyles.b6,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+//             subtitle: Text(
+//               '${timeSlot.subtitle}iafu ef oeufeyf ieuyf iuyewf e fiuyef weyf iwe fyw efy wieuf yi ef',
+//               style: TextStyles.b6,
+//               maxLines: 1,
+//               overflow: TextOverflow.ellipsis,
+//             ),
 
-            leading: Container(
-              width: 6,
-              color: color,
-            ),
+//             leading: Container(
+//               width: 6,
+//               color: color,
+//             ),
           
-            trailing: Text(
-              timeSlot.venue,
-              style: TextStyles.b6,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+//             trailing: Text(
+//               timeSlot.venue,
+//               style: TextStyles.b6,
+//               maxLines: 1,
+//               overflow: TextOverflow.ellipsis,
+//             ),
           
-            tileColor: Colors.white,
-            minLeadingWidth: 0,
-            minVerticalPadding: 0,
-            contentPadding: const EdgeInsets.only(right: 26),
-          ),
-        ),
+//             tileColor: Colors.white,
+//             minLeadingWidth: 0,
+//             minVerticalPadding: 0,
+//             contentPadding: const EdgeInsets.only(right: 26),
+//           ),
+//         ),
 
-        Container(
+//         Container(
 
-          height: 28,
-          width: 108,
-          alignment: Alignment.center,
-          margin: const EdgeInsets.only(right: 12),
+//           height: 28,
+//           width: 108,
+//           alignment: Alignment.center,
+//           margin: const EdgeInsets.only(right: 12),
 
-          decoration: Decorations.timeSlotTileFooter(Utils.darken(color, 0.05)),
+//           decoration: Decorations.timeSlotTileFooter(Utils.darken(color, 0.05)),
 
-          child: Text(
-            '${timeSlot.startTime.hour}:${timeSlot.startTime.minute} - ${timeSlot.endTime.hour}:${timeSlot.endTime.minute}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-              fontSize: 14
-            ),
-          ),
-        )
-      ],
-    );
-  }
-}
+//           child: Text(
+//             '${timeSlot.startTime.format(context)} - ${timeSlot.endTime.format(context)}',
+//             style: const TextStyle(
+//               color: Colors.white,
+//               fontWeight: FontWeight.w500,
+//               fontSize: 14
+//             ),
+//           ),
+//         )
+//       ],
+//     );
+//   }
+// }

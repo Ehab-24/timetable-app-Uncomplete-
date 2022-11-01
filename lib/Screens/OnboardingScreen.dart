@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_arc_text/flutter_arc_text.dart';
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
@@ -23,32 +24,36 @@ List<Widget> animations = const [
   RiveAnimation.asset(
     'assets/rive/timetable_app_onBoarding.riv',
     artboard: 'page1',
+    fit: BoxFit.fitWidth,
   ),
   RiveAnimation.asset(
     'assets/rive/timetable_app_onBoarding.riv',
     artboard: 'page2',
+    fit: BoxFit.fitWidth,
   ),
   RiveAnimation.asset(
     'assets/rive/timetable_app_onBoarding.riv',
     artboard: 'page3',
+    fit: BoxFit.fitWidth,
   ),
   RiveAnimation.asset(
     'assets/rive/timetable_app_onBoarding.riv',
     artboard: 'page4',
+    fit: BoxFit.fitWidth,
   ),
 ];
 
 String firstTableTitle = '';
 
 
-class CreateFirstTableScreen extends StatefulWidget {
-  const CreateFirstTableScreen({super.key});
+class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({super.key});
 
   @override
-  State<CreateFirstTableScreen> createState() => _CreateFirstTableScreenState();
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _CreateFirstTableScreenState extends State<CreateFirstTableScreen> {
+class _OnboardingScreenState extends State<OnboardingScreen> {
 
   late final Timer timer;
   late final PageController pageController;
@@ -106,7 +111,10 @@ class _CreateFirstTableScreenState extends State<CreateFirstTableScreen> {
                 Positioned(
                   top: h * 0.05,
                   right: w * -0.03,
-                  child: BackgroundBlob(radius: h * 0.1, center: const Alignment(0.2, 0.7),)
+                  child: BackgroundBlob(
+                    radius: h * 0.1, 
+                    center: const Alignment(0.2, 0.7),
+                  )
                 ),
                 
                 Positioned(
@@ -142,8 +150,10 @@ class _CreateFirstTableScreenState extends State<CreateFirstTableScreen> {
                 Form(
                   key: Utils.formKey,
                   child: PageView(
+                    
                     controller: pageController,
                     physics: const NeverScrollableScrollPhysics(),
+                    
                     children: [
                       Page1(
                         animate1: tickWatch.value > 10, animate2: tickWatch.value > 15,
@@ -390,8 +400,8 @@ class _Page2State extends State<Page2> {
     
         Positioned(
     
-          top: isKeyboardVisible? h * 0.23: h * 0.38,
-          left: w * 0.5,
+          top: isKeyboardVisible? h * 0.21: h * 0.36,
+          right: w * 0.16,
     
           child: AnimatedScale(
     
@@ -419,15 +429,23 @@ class _Page2State extends State<Page2> {
     
         Positioned(
     
-          top: isKeyboardVisible? h * 0.35: h * 0.5,
-          left: w * 0.47,
+          top: isKeyboardVisible? h * 0.34: h * 0.49,
+          right: w * 0.1,
     
           child: SizedBox(
             height: 100,
             width: 200,
             child: TextFormField(
 
-              initialValue: Prefs.getUsername(),
+              initialValue: Prefs.username,
+              style: TextStyles.bUltra,
+              maxLength: 10,
+              maxLengthEnforcement: MaxLengthEnforcement.enforced,
+              decoration: Decorations.textFieldBold(
+                hint: 'Name',
+                errorColor: Colors.red.shade100,
+                contentPadding: EdgeInsets.symmetric(horizontal: w * 0.03, vertical: h * 0.05)
+              ),
               
               onSaved: (value) {
                 Prefs.setUsername(value ?? '');
@@ -442,7 +460,16 @@ class _Page2State extends State<Page2> {
                 }
                 return null;
               },
-              decoration: Decorations.onboardingTextField(w, h)
+
+              buildCounter: ((context, {required currentLength, required isFocused, maxLength}) => 
+                Container(
+                  transform: Matrix4.translationValues(16, -114, 0),
+                  child: Text(
+                    '$currentLength/$maxLength',
+                    style: TextStyles.toast(Colors.blueGrey.shade800),
+                  ),
+                )
+              ),
             ),
           )
         ),
@@ -460,7 +487,7 @@ class _Page2State extends State<Page2> {
     
             child: Text(
               '-- Respect the abstract.',
-              style: TextStyles.b3(color: Colors.grey.shade300)
+              style: TextStyles.b3(Colors.grey.shade300)
             ),
           ),
         ),
@@ -524,13 +551,11 @@ class _Page3State extends State<Page3> {
               if(tickReader.value < 20){
                 return;
               }
-             
               final bool isValid = Utils.formKey.currentState!.validate();
              
               if(!isValid){
                 return;
               }
-        
               FocusManager.instance.primaryFocus?.unfocus();
               
               Utils.formKey.currentState!.save();
@@ -555,19 +580,19 @@ class _Page3State extends State<Page3> {
 
             child: Text(
               '-- We take pride in your schedules.',
-              style: TextStyles.b3(color: Colors.grey.shade300),
+              style: TextStyles.b3(Colors.grey.shade300),
             ),
           )
         ),
 
         Positioned(
 
-          top: h * 0.37,
+          top: isKeyboardVisible ? h * 0.16 : h * 0.37,
           left: w * 0.33,
 
           child: AnimatedScale(
 
-            scale: widget.animate1 && !isKeyboardVisible? 1: 0,
+            scale: widget.animate1? 1: 0,
             duration: Durations.d1000,
             curve: Curves.elasticOut,
 
@@ -612,30 +637,45 @@ class _Page3State extends State<Page3> {
 
           child: Align(
             
-            alignment: const Alignment(0, 0.4),
+            alignment: const Alignment(0, 0.45),
             
             child: SizedBox(
             
               height: 120,
-              width: 260,
+              width: 320,
 
               child: TextFormField(
                
                 initialValue: firstTableTitle,
-                decoration: Decorations.onboardingTextField(w, h),
+                decoration: Decorations.textFieldBold(
+                  hint: 'Title', 
+                  contentPadding: EdgeInsets.symmetric(horizontal: w * 0.03, vertical: h * 0.05)
+                ),
+                maxLength: 20,
+                style: TextStyles.bUltra,
+                maxLengthEnforcement: MaxLengthEnforcement.enforced,
                 
-                onSaved: (value) {
-                  firstTableTitle = value ?? '';
+                onSaved: (title) {
+                  firstTableTitle = title ?? '';
                 },
                 onFieldSubmitted: (val){
                   FocusManager.instance.primaryFocus?.unfocus();
                 },
-                validator: (name) {
-                  if(name == null || name == ''){
+                validator: (title) {
+                  if(title == null || title == ''){
                     return 'Title must not be empty.';
                   }
                   return null;
                 },
+                buildCounter: ((context, {required currentLength, required isFocused, maxLength}) => 
+                  Container(
+                    transform: Matrix4.translationValues(16, -134, 0),
+                    child: Text(
+                      '$currentLength/$maxLength',
+                      style: TextStyles.toast(Colors.blueGrey.shade800),
+                    ),
+                  )
+                ),
               ),
             )
           ),
@@ -729,7 +769,7 @@ class _Page4State extends State<Page4> {
 
             child: Text(
               '-- Spend time to save some.',
-              style: TextStyles.b3(color: Colors.grey.shade300),
+              style: TextStyles.b3(Colors.grey.shade300),
             ),
           )
         ),
@@ -822,21 +862,21 @@ class BackgroundBlob extends StatelessWidget {
   const BackgroundBlob({
     super.key,
     required this.radius,
-    required this.center
+    required this.center,
   });
 
-  final double radius;
   final AlignmentGeometry center;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-
+    
       width: radius * 2,
       height: radius * 2,
-
+    
       decoration: BoxDecoration(
-
+    
         borderRadius: BorderRadius.circular(radius),
         gradient: Gradients.backgroundBlob(center)
       ),
@@ -880,15 +920,15 @@ class BackgroundBlob extends StatelessWidget {
 
 // int currentPage = 0;
 
-// class CreateFirstTableScreen extends StatefulWidget{
-//   const CreateFirstTableScreen({super.key});
+// class OnboardingScreen extends StatefulWidget{
+//   const OnboardingScreen({super.key});
 
 
 //   @override
-//   State<CreateFirstTableScreen> createState() => _CreateFirstTableScreenState();
+//   State<OnboardingScreen> createState() => _OnboardingScreenState();
 // }
 
-// class _CreateFirstTableScreenState extends State<CreateFirstTableScreen> {
+// class _OnboardingScreenState extends State<OnboardingScreen> {
 
 //   late final Ticker_pr tickReader;
 

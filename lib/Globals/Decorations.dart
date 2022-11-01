@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:timetable_app/Globals/Styles.dart';
 
 import 'ColorsAndGradients.dart';
 import 'Utils.dart';
@@ -46,21 +47,30 @@ class Decorations{
         )
       ] : []
     );
-  static BoxDecoration tableTileInternal = BoxDecoration(
-          
-    // gradient: Gradients.tableTile,
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(8)
+  static BoxDecoration decoratedContainer = BoxDecoration(
+    borderRadius: BorderRadius.circular(20),
+    gradient: Gradients.decoratedContainer
+  );
+  static BoxDecoration decoratedContainer_alt(Color color) => BoxDecoration(
+    borderRadius: BorderRadius.circular(20),
+    color: color,
+  );
+  static BoxDecoration progressIndicator = BoxDecoration(
+    color: Colors.pink,
+    borderRadius: BorderRadius.circular(500),
+    boxShadow: const [               
+      BoxShadow(
+        color: Colors.black45,
+        blurRadius: 10
+      )
+    ]
+  );
+  static BoxDecoration tableTile(Color color) => BoxDecoration(
+    color: color,
+    borderRadius: BorderRadius.circular(20)
   );
   static BoxDecoration tableTileExternal = BoxDecoration(
     borderRadius: BorderRadius.circular(8),
-    boxShadow: const [
-      BoxShadow(
-        color: Colors.black38,
-        offset: Offset(5,5),
-        blurRadius: 10,
-      ),
-    ],
   );
   static BoxDecoration dropdownButton(Color color) => BoxDecoration(
     border: Border.all(
@@ -69,14 +79,22 @@ class Decorations{
     borderRadius: BorderRadius.circular(6)
   );
   static BoxDecoration workLoadBar = BoxDecoration(
-    gradient: LinearGradient(
-      colors: [Colors.green.shade300, Colors.green],
+    gradient: const LinearGradient(
+      colors: [Color.fromRGBO(255, 101, 127, 1), Color.fromRGBO(255, 51, 112, 1)],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter
     ),
     borderRadius: BorderRadius.circular(12)
   );
-  static BoxDecoration timeTableWidgetHeader(AssetImage image, double h, double w) => BoxDecoration(
+  static BoxDecoration workLoadBar_alt = BoxDecoration(
+    gradient: const LinearGradient(
+      colors: [Color.fromRGBO(255, 101, 127, 0.2), Color.fromRGBO(255, 51, 112, 0.2)],
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter
+    ),
+    borderRadius: BorderRadius.circular(12)
+  );
+  static BoxDecoration timeTableScreenHeader(AssetImage image, double h, double w) => BoxDecoration(
             
     borderRadius: BorderRadius.only(
       topLeft: const Radius.circular(16),
@@ -97,16 +115,20 @@ class Decorations{
   );
   static const BoxDecoration homeVignette = BoxDecoration(
     gradient: LinearGradient(
-      colors: [Colors.transparent, Colors.black87],
-      begin: Alignment.center,
+      colors: [Colors.black87, Colors.black54],
+      begin: Alignment.topCenter,
       end: Alignment.bottomCenter
     )
   );
   static const BoxDecoration homeImage = BoxDecoration(
     image: DecorationImage(
-      image: AssetImage('assets/images/home_bk.jpg'),
-      fit: BoxFit.cover
+      // image: AssetImage('assets/images/home_bk.jpg'),
+      image: AssetImage('assets/images/landscape.jpg'),
+      fit: BoxFit.cover,
     ),
+  );
+  static const BoxDecoration tablesScreenAppBar = BoxDecoration(
+    gradient: Gradients.primary,
   );
   static BoxDecoration reminderHeader(final double w) => BoxDecoration(
     gradient: Gradients.primary,
@@ -121,14 +143,17 @@ class Decorations{
       )
     ]
   );
-  static BoxDecoration reminderTile = BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(8),
-    boxShadow: const [
+  static BoxDecoration reminderTile(Color color) => BoxDecoration(
+    color: color,
+    borderRadius: BorderRadius.circular(20),
+  );
+  static BoxDecoration FAB(Color color) => BoxDecoration(
+    shape: BoxShape.circle,
+    boxShadow: [
       BoxShadow(
-        offset: Offset(4,4),
-        blurRadius: 6,
-        color: Colors.black45
+        color: color.withOpacity(0.5),
+        blurRadius: 8,
+        // offset: const Offset(1.5, 3)
       )
     ]
   );
@@ -141,20 +166,23 @@ class Decorations{
     ),
     contentPadding: const EdgeInsets.symmetric(horizontal: 10),
   );
-  static InputDecoration onboardingTextField(double w, double h) => InputDecoration(
-    hintText: 'Title',
-    hintStyle: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w900),
-    fillColor: const Color.fromRGBO(224, 224, 224, 1),
+  static InputDecoration textFieldBold({required String hint, EdgeInsetsGeometry contentPadding = const EdgeInsets.symmetric(horizontal: 16, vertical: 24), 
+    Color color = const Color.fromRGBO(238, 238, 238, 1), Color errorColor = Colors.red}) => 
+  InputDecoration(
+    hintText: hint,
+    hintStyle: const TextStyle(color: Colors.black26, fontWeight: FontWeight.w900),
+    fillColor: color,
     filled: true,
     isDense: true,
-    contentPadding: EdgeInsets.symmetric(horizontal: w * 0.1, vertical: h * 0.05),
+    contentPadding: contentPadding,
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(20)
+      borderSide: BorderSide.none,
+      borderRadius: BorderRadius.circular(20),
     ),
     errorStyle: TextStyle(
-      color: Colors.blueGrey.shade800,
+      color: errorColor,
       fontSize: 14,
-      fontWeight: FontWeight.bold
+      fontWeight: FontWeight.bold,
     )
   );
 }

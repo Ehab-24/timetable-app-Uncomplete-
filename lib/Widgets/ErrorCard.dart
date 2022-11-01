@@ -51,10 +51,10 @@ class ErrorCard extends StatelessWidget {
 
                 const SizedBox(height: 40,),
 
-                const Center(
+                Center(
                   child: Text(
                     'Error!',
-                    style: TextStyles.h1
+                    style: TextStyles.h1(Colors.blueGrey.shade800)
                   ),
                 ),
 
@@ -62,7 +62,7 @@ class ErrorCard extends StatelessWidget {
 
                 Text(
                   content,
-                  style: TextStyles.b4(color: Colors.blueGrey.shade800),
+                  style: TextStyles.b4(Colors.blueGrey.shade800),
                   textAlign: TextAlign.center,
                 ),
 
@@ -75,7 +75,6 @@ class ErrorCard extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    style: ButtonStyles.closeButton(Colors.blueGrey.shade800),
                     child: const Text(
                       'Close',
                       style: TextStyle(color: Color.fromRGBO(55, 71, 79, 1)),

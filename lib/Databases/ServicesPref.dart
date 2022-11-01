@@ -7,6 +7,7 @@ class Prefs {
  
   static const kUsername = 'username';
   static const kHomeTable = 'home-table';
+  static const kDarkMode = 'dark-mode';
 
 
 /* ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ Fields ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ */
@@ -20,13 +21,18 @@ class Prefs {
     preferences = await SharedPreferences.getInstance();
 
 
+  static String get username =>
+    preferences.getString(kUsername) ?? '';
   static Future<void> setUsername(String name) async =>
     await preferences.setString(kUsername, name);
-  static String getUsername() =>
-    preferences.getString(kUsername) ?? '';
     
+  static int get homeTable =>
+    preferences.getInt(kHomeTable) ?? 0;
   static Future<void> setHomeTable(int index) async =>
     await preferences.setInt(kHomeTable, index);
-  static int getHomeTable() =>
-    preferences.getInt(kHomeTable) ?? 0;
+    
+  static bool get isDarkMode=>
+    preferences.getBool(kDarkMode) ?? false;
+  static Future<void> setDarkMode(bool val) async =>
+    await preferences.setBool(kDarkMode, val);
 }

@@ -55,6 +55,7 @@ class _LinearFlowFABState extends State<LinearFlowFAB>
   @override
   Widget build(BuildContext context) {
 
+    final Color_pr colorWatch = context.watch<Color_pr>();
     final Screen_pr screenWatch = context.watch<Screen_pr>();
     
     return AnimatedBuilder(
@@ -65,18 +66,26 @@ class _LinearFlowFABState extends State<LinearFlowFAB>
         return Container(
           
           clipBehavior: Clip.hardEdge,
-          height: animation.value * buttonSize + 20,
+          height: animation.value * buttonSize + 10,
           width: buttonSize,
-          margin: const EdgeInsets.only(bottom: 30),
-          padding: const EdgeInsets.symmetric(vertical: 5),
-
+          margin: const EdgeInsets.only(bottom: 20),
+        
           decoration: BoxDecoration(
             gradient: screenWatch.currentScreen == Screens.home
             ? Gradients.linearFlowFAB_alt
             : Gradients.linearFlowFAB,
-            borderRadius: BorderRadius.circular(buttonSize/2)
+            borderRadius: BorderRadius.circular(buttonSize/2),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 8,
+                offset: const Offset(0,2),
+                color: screenWatch.currentScreen == Screens.home 
+                ? Colors.white.withOpacity(0.5)
+                : colorWatch.shadow_alt.withOpacity(0.5),
+              )
+            ]
           ),
-
+        
           child: Material(
             type: MaterialType.transparency,
             child: SingleChildScrollView(
@@ -90,7 +99,7 @@ class _LinearFlowFABState extends State<LinearFlowFAB>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 
                 children: [
-
+        
                   ExpandedChildren(
                     controller: controller,
                   ),
@@ -159,7 +168,12 @@ class _ExpandedChildrenState extends State<ExpandedChildren> {
         children: [
             
         _Item(icon: const Icon(Icons.person_outline_outlined), onPressed: (){
-          //TODO: Profile screen
+            if(screenWatch.currentScreen == Screens.profile){
+              widget.controller.reverse();
+            }
+            else{
+              screenReader.setScreen(Screens.profile);
+            }
           },
         ),
 

@@ -75,9 +75,8 @@ class Screens{
 
   static const int home = 0;
   static const int mytables = 1;
-  static const int web = 2;
-  static const int schedule = 3;
-  static const int reminders = 4;
+  static const int reminders = 2;
+  static const int profile = 3;
 }
 
 class Durations{
@@ -105,6 +104,7 @@ class Spaces{
   static const vertical20 =  SizedBox(height: 20);
   static const vertical30 =  SizedBox(height: 30);
   static const vertical40 =  SizedBox(height: 40);
+  static const vertical50 =  SizedBox(height: 50);
   static const vertical60 =  SizedBox(height: 60);
   static const vertical80 =  SizedBox(height: 80);
   static const vertical120 =  SizedBox(height: 120);

@@ -72,4 +72,12 @@ extension DateTimeExtenstion on DateTime{
     }
     return false;
   }
+
+  bool isSameDayAs(DateTime dt){
+    return dt.year == this.year && dt.month == this.month && dt.day == this.day;
+  }
+
+  bool isSameMinuteAs(DateTime dt){
+    return this.isSameDayAs(dt) && this.hour == dt.hour && this.minute == dt.minute;
+  }
 }

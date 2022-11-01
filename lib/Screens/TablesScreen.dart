@@ -1,13 +1,18 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sequence_animation/flutter_sequence_animation.dart';
 import 'package:provider/provider.dart';
-import 'package:timetable_app/Globals/ColorsAndGradients.dart';
+import 'package:timetable_app/Databases/ServicesPref.dart';
+import 'package:timetable_app/Globals/Decorations.dart';
+import 'package:timetable_app/Globals/Styles.dart';
 import 'package:timetable_app/Globals/Utils.dart';
 import 'package:timetable_app/Globals/enums.dart';
 
 import '../../../Globals/Providers.dart';
 import '../../../Widgets/TimeTableTile.dart';
+import '../Globals/Reals.dart';
 import '../Widgets/LinearFlowFAB.dart';
 
 
@@ -20,14 +25,15 @@ class TablesScreen extends StatefulWidget{
 
 class _TablesScreenState extends State<TablesScreen> {
 
-  bool beginAnimation = false;
+  bool animate1 = false;
+  bool animate2 = false;
   
   late final PageController pageController;
 
   @override
   void initState() {
     delay();
-    pageController = PageController();
+    pageController = PageController(initialPage: Prefs.homeTable);
     super.initState();
   }
 
@@ -37,78 +43,125 @@ class _TablesScreenState extends State<TablesScreen> {
     super.dispose();
   }
 
-  int tableIndex = 0;
-
   @override
   Widget build(BuildContext context) {
-    
-    Table_pr tableWatch = context.watch<Table_pr>();
-    final double w = Utils.screenWidthPercentage(context, 1);
-    final double h = Utils.screenHeightPercentage(context, 1);
+
+    final Color_pr colorWatch = context.watch<Color_pr>();
     
     return SafeArea(
-      
+
       child: Scaffold(
+
+        resizeToAvoidBottomInset: false,      
+        backgroundColor: colorWatch.background,
       
-        backgroundColor: Colors.grey.shade200,
-    
         body: Stack(
-    
-          clipBehavior: Clip.none,
-    
           children: [
+
+            SizedBox(height: Utils.screenHeightPercentage(context, 1), width: Utils.screenWidthPercentage(context, 1),),
             
             Column(
               children: [
-    
+                
                 const TableScreenAppBar(),
-
-                Expanded(
-                  child: PageView.builder(
-                    controller: pageController,
-                    onPageChanged: ((index) => 
-                      setState(() {
-                        tableIndex = index;
-                      })
-                    ),
-                    itemCount: tableWatch.tables.length,
-                    itemBuilder: ((context, index) => 
-                      AnimatedOpacity(
-                        duration: Durations.d300,
-                        curve: Curves.easeInOut,
-                        opacity: beginAnimation? 1: 0,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: w * 0.05, top: h * 0.05),
-                          child: TimeTableTile(table: tableWatch.tables[index]),
-                        ))
-                    )
-                  ),
+            
+                Spaces.vertical60,
+              
+                _TablesList(
+                  pageController: pageController, 
+                  animate1: animate1,
+                  animate2: animate2,
                 ),
               ],
             ),
             
-            Positioned(
-              top: h * 0.38,
-              right: 20,
-              child: FloatingActionButton(
-                onPressed: (){
-                  Utils.showCreateTableDialog(context);
-                },
-                child: const Icon(Icons.playlist_add, color: Color.fromRGBO(55, 71, 79, 1),),
-              ),
-            ),
+            //FAB to add a table
+            const _FAB(),
           ],
         ),
       
+        //FAB for navigation.
         floatingActionButton: const LinearFlowFAB(),
       ),
     );
   }
   
   Future<void> delay() async {
-    Future.delayed(Durations.d800, () {
-      setState(() {beginAnimation = true;});
-    });
+    await Future.delayed(Durations.d600);
+    setState(() {animate1 = true;});
+    await Future.delayed(Durations.d300);
+    setState(() {animate2 = true;});
+  }
+}
+
+class _FAB extends StatelessWidget {
+  const _FAB({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+
+    final Color_pr colorWatch = context.watch<Color_pr>();
+    
+    return Positioned(
+      top: Utils.screenHeightPercentage(context, 0.312),
+      right: 20,
+      child: DecoratedBox(
+        decoration: Decorations.FAB(colorWatch.shadow_alt),
+        child: FloatingActionButton(
+          onPressed: (){
+            Utils.showCreateTableDialog(context);
+          },
+          elevation: 0,
+          foregroundColor: colorWatch.foreground,
+          backgroundColor: colorWatch.onBackground,
+          child: const Icon(Icons.playlist_add),
+        ),
+      ),
+    );
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class _TablesList extends StatelessWidget {
+  const _TablesList({
+    Key? key,
+    required this.pageController,
+    required this.animate1,
+    required this.animate2,
+  }) : super(key: key);
+
+  final PageController pageController;
+  final bool animate1;
+  final bool animate2;
+
+  @override
+  Widget build(BuildContext context) {
+
+    final Table_pr tableWatch = context.watch<Table_pr>();
+
+    final w = Utils.screenWidthPercentage(context, 1);
+
+    return Expanded(
+      
+      child: PageView.builder(
+        
+        controller: pageController,
+        onPageChanged: ((index) => 
+          currentTableIndex = index
+        ),
+        itemCount: tableWatch.tables.length,
+        itemBuilder: ((context, index) => 
+          
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: w * 0.05,),
+            child: TimeTableTile(animate1: animate1, animate2: animate2, table: tableWatch.tables[index]),
+          )
+        )
+      ),
+    );
   }
 }
 
@@ -129,7 +182,10 @@ class _TableScreenAppBarState extends State<TableScreenAppBar>
 
   @override
   void initState() {
-     controller = AnimationController(vsync: this, duration: Durations.d800);
+
+    print(Prefs.isDarkMode);
+
+    controller = AnimationController(vsync: this, duration: Durations.d800);
 
     animation = SequenceAnimationBuilder()
     .addAnimatable(
@@ -179,86 +235,102 @@ class _TableScreenAppBarState extends State<TableScreenAppBar>
     final double h = Utils.screenHeightPercentage(context, 1);
     final double w = Utils.screenWidthPercentage(context, 1);
 
-    return ClipRRect(
-      
-      borderRadius: BorderRadius.only(
-        bottomLeft: Radius.elliptical(w/2, h * 0.05),
-        bottomRight: Radius.elliptical(w/2, h * 0.05),
+    return DecoratedBox(
+
+      decoration: BoxDecoration(
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.pink,
+            blurRadius: 20,
+            offset: Offset(0, 5)
+          )
+        ],
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.elliptical(w/2, h * 0.07),
+          bottomRight: Radius.elliptical(w/2, h * 0.07),
+        ),
       ),
-      
-      child: AnimatedBuilder(
-        animation: controller,
-        builder: (context, child) {
-          return Opacity(
-            opacity: animation['opacity'].value,
-            child: Container(
-              // width: w * animation['scale'].value,
-              height: h * 0.382 * animation['scale'].value / animation['scale2'].value,
-              decoration: const BoxDecoration(
-                gradient: Gradients.primary,
+
+      child: ClipRRect(
+        
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.elliptical(w/2, h * 0.05),
+          bottomRight: Radius.elliptical(w/2, h * 0.05),
+        ),
+        
+        child: AnimatedBuilder(
+          animation: controller,
+          builder: (context, child) {
+            return Opacity(
+              
+              opacity: animation['opacity'].value,
+              
+              child: Container(
+              
+                height: h * 0.322 * animation['scale'].value / animation['scale2'].value,
+                decoration: Decorations.tablesScreenAppBar,
+              
+                child: Opacity(
+                  opacity: animation['opacity2'].value,
+                  child: Stack(
+                    
+                    children: [
+                    
+                      Positioned(
+                        top: h * 0.06,
+                        left: w * 0.4,
+                        child: _RotatedIcon(opacity: 0.25, size: w * 0.15, angle: pi/3,),
+                      ),
+                      Positioned(
+                        top: h * 0.16,
+                        left: w * 0.05,
+                        child: _RotatedIcon(angle: pi/1.1,size: w * 0.5, opacity: 0.3,)
+                      ),
+                      Positioned(
+                        top: h * 0.14,
+                        left: w * 0.65,
+                        child: _RotatedIcon(angle: pi/4, size: w * 0.25, opacity: 0.2,)
+                      ),
+                    
+                      Align(
+                        alignment: const Alignment(0, 0.6),
+                        child: Text(
+                          'My Tables',
+                          style: TextStyles.h1light(Colors.white.withOpacity(0.9)),
+                        ),
+                      ), 
+                    ],
+                  ),
+                )
               ),
-              child: Opacity(
-                opacity: animation['opacity2'].value,
-                child: Stack(
-                  
-                  children: [
-                  
-                    Positioned(
-                      top: h * 0.12,
-                      left: w * 0.4,
-                      child: Transform.rotate(
-                        angle: 29,
-                        child: Icon(
-                          Icons.pages_rounded, 
-                          size: w * 0.15, 
-                          color: const Color.fromRGBO(214, 214, 214, 0.4),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: h * 0.22,
-                      left: w * 0.05,
-                      child: Transform.rotate(
-                        angle: 75,
-                        child: Icon(
-                          Icons.pages_rounded, 
-                          size: w * 0.5, 
-                          color: const Color.fromRGBO(214, 214, 214, 0.4),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: h * 0.2,
-                      left: w * 0.65,
-                      child: Transform.rotate(
-                        angle: 175,
-                        child: Icon(
-                          Icons.pages_rounded, 
-                          size: w * 0.25, 
-                          color: const Color.fromRGBO(214, 214, 214, 0.4),
-                        ),
-                      ),
-                    ),
-                  
-                    Positioned(
-                      left: w * 0.32,
-                      top: h * 0.27,
-                      child: RichText(
-                        text: TextSpan(
-                          children: [
-                            
-                            ...appBarHeader('M', 'y'),
-                            ...appBarHeader(' T', 'ables')
-                          ]
-                        )
-                      ),
-                    ), 
-                  ],
-                ),
-              )
-            ),
-          );
-        }
+            );
+          }
+        ),
+      ),
+    );
+  }
+}
+//
+class _RotatedIcon extends StatelessWidget {
+  const _RotatedIcon({
+    Key? key,
+    required this.angle,
+    required this.size,
+    required this.opacity
+  }) : super(key: key);
+
+  final double size;
+  final double opacity;
+  final double angle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+      angle: angle,
+      child: Icon(
+        Icons.pages_rounded, 
+        size: size, 
+        color: Color.fromRGBO(214, 214, 214, opacity),
       ),
     );
   }

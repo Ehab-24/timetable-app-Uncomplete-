@@ -1,23 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:timetable_app/Classes/FocusedMenuItem.dart';
-import 'package:timetable_app/Globals/enums.dart';
 
-// const int INT_MAX = 9223372036854775807;
+import '../Classes/Reminder.dart';
+import '../Classes/TimeTable.dart';
 
-
-ThemeData themeData = ThemeData(
-  scrollbarTheme: ScrollbarThemeData(
-    thumbColor: MaterialStateProperty.all(Colors.grey),
-    crossAxisMargin: 4
-  ), 
-  colorScheme: ColorScheme.fromSwatch().copyWith(
-    onPrimary: Colors.grey.shade200,
-    primary: Colors.blueGrey.shade900,
-    secondary: Colors.white
-    // secondary: Colors.blueGrey.shade800
-  ),
-);
 
 List<String> days = [
   'Monday',
@@ -30,14 +17,22 @@ List<String> days = [
 ];
 
 List<FocusedMenuListItem> focusedMenuItems = [
+  FocusedMenuListItem(icon: const Icon(Icons.home), title: 'Set as home'),
   FocusedMenuListItem(icon: const Icon(Icons.stacked_bar_chart), title: 'Statistics'),
-  FocusedMenuListItem(icon: const Icon(Icons.upload), title: 'Upload', ),
+  FocusedMenuListItem(icon: const Icon(Icons.edit_note), title: 'Edit Table', ),
   FocusedMenuListItem(icon: const Icon(Icons.delete), title: 'Clear Table',),
   FocusedMenuListItem(icon: const Icon(Icons.delete_forever), title: 'Delete Table'),
-  FocusedMenuListItem(icon: const Icon(Icons.edit), title: 'Edit Table', ),
-  FocusedMenuListItem(icon: const Icon(Icons.add_circle_outline), title: 'Add Reminder', ),
-  FocusedMenuListItem(icon: const Icon(Icons.add_box_outlined), title: 'Add Slot', ),
+  FocusedMenuListItem(icon: const Icon(Icons.add_box), title: 'Add Slot', ),
 ];
 
-int currentTableId = -1;
+int currentTableIndex = 0;
 String linearFlowFab = 'linear-flow-fab';
+
+EdgeInsets MARGIN = const EdgeInsets.symmetric(horizontal: 4);
+BorderRadius BORDER_RADIUS = BorderRadius.circular(80);
+const double ELEVATION = 20;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+late List<TimeTable> timeTables;
+late List<Reminder> reminders;

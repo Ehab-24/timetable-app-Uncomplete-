@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Globals/Reals.dart';
+import 'package:timetable_app/Globals/Utils.dart';
 
 import '../Globals/Providers.dart';
 import '../Globals/enums.dart';
@@ -10,13 +11,11 @@ class DayTile extends StatefulWidget{
   const DayTile({
     Key? key,
     required this.day,
-    required this.width,
     required this.color,
     required this.onDayChange,
   }) : super(key: key);
 
   final String day;
-  final double width;
   final Color color;
   final Function() onDayChange;
 
@@ -41,7 +40,9 @@ class _DayTileState extends State<DayTile> {
 
     final int dayIndex = days.indexOf(widget.day);
     final bool isSelected = dayIndex == dayWatch.selectedDay;
-    
+
+    final double h = Utils.screenHeightPercentage(context, 1);
+
     return InkWell(
 
       onTap: widget.onDayChange,
@@ -51,10 +52,10 @@ class _DayTileState extends State<DayTile> {
         duration: Durations.d300,
         curve: Curves.decelerate,
 
-        width: widget.width,
+        width: 45,
         height: isSelected
-        ? 50
-        : 35,
+        ? h * 0.07
+        : h * 0.07 - 16,
         alignment: Alignment.center,
     
         decoration: BoxDecoration(

@@ -5,8 +5,67 @@ import 'package:flutter/material.dart';
 import 'package:timetable_app/Classes/Reminder.dart';
 import 'package:timetable_app/Classes/TimeSlot.dart';
 import 'package:timetable_app/Classes/TimeTable.dart';
+import 'package:timetable_app/Databases/ServicesPref.dart';
+import 'package:timetable_app/Globals/ColorsAndGradients.dart';
+import 'package:timetable_app/Globals/Reals.dart';
 import 'package:timetable_app/Globals/enums.dart';
 
+
+class NewReminder_pr extends ChangeNotifier{
+
+  NewReminder_pr();
+
+  Reminder reminder = Reminder.zero;
+
+  void setDateTime(DateTime dt){
+    reminder.dateTime = dt;
+    notifyListeners();
+  }
+  void setTitle(String title){
+    reminder.title = title;
+    notifyListeners();
+  }
+  void setDesc(String desc){
+    reminder.description = desc;
+    notifyListeners();
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class NewSlot_pr extends ChangeNotifier{
+
+  NewSlot_pr();
+
+  TimeSlot timeSlot = TimeSlot.zero(-1,0);
+
+  void setDay(int day){
+    timeSlot.day = day;
+    notifyListeners();
+  }
+  void setVenue(String venue){
+    timeSlot.venue = venue;
+    notifyListeners();
+  }
+  void setStartTime(TimeOfDay td){
+    timeSlot.startTime = td;
+    notifyListeners();
+  }
+  void setEndTime(TimeOfDay td){
+    timeSlot.endTime = td;
+    notifyListeners();
+  }
+  void setTitle(String title){
+    timeSlot.title = title;
+    notifyListeners();
+  }
+  void setSubtitle(String sutitle){
+    timeSlot.subtitle = sutitle;
+    notifyListeners();
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Day_pr extends ChangeNotifier{
 
@@ -74,22 +133,8 @@ class Reminder_pr extends ChangeNotifier{
 
   void add(Reminder rem){
 
-    if(reminders.isEmpty){
-      reminders.add(rem);
-      return;
-    }
-
-    //Add a place holder.
-    reminders.add(Reminder.zero);
-
-    //Find proper index to keep the array sorted.
-    int index = searchInsertionIndex(rem);
-
-    //Shift elements to the right.
-    for(int i = reminders.length - 1; i > index; i--){
-      reminders[i] = reminders[i-1];
-    }
-    reminders[index] = rem;
+    reminders.add(rem);
+    sort();
 
     notifyListeners();
   }
@@ -97,7 +142,10 @@ class Reminder_pr extends ChangeNotifier{
   void update(Reminder rem){
     for(int i = 0; i < reminders.length; i++){
       if(reminders[i].id == rem.id){
+        
         reminders[i] = rem;
+        sort();
+
         notifyListeners();
         return;
       }
@@ -107,54 +155,15 @@ class Reminder_pr extends ChangeNotifier{
 
   void remove(Reminder rem){
 
-    int index = searchRemovalIndex(rem);
-    reminders.removeAt(index);
+    reminders.remove(rem);
+    sort();
 
     notifyListeners();    
   }
 
-
-/* ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ UTILITY ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~*/
-
-  int searchInsertionIndex(Reminder rem){
-  
-    for(int i = 0; i < reminders.length; i++){
-      if(rem > reminders[i]){
-        return i;
-      }
-    }
-    return reminders.length - 1;
+  void sort(){
+    Reminder.sortAll(reminders);
   }
-
-  int searchRemovalIndex(Reminder rem){
-   
-    int l = 0, r = reminders.length - 1;
-
-    if(reminders[l] == rem){
-      return l;
-    }
-    if(reminders[r] == rem){
-      return r;
-    }
-
-    int mid;
-    while(l < r){
-
-      mid = ((l + r) / 2).floor();
-
-      if(reminders[mid] > rem){
-        r = mid;
-      }
-      else if(rem > reminders[mid]){
-        l = mid;
-      }
-      else{
-        return mid;
-      }
-    }
-    return -1;
-  }
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -179,6 +188,14 @@ class Table_pr extends ChangeNotifier{
     notifyListeners();
   }
 
+  void updateSlot(TimeSlot ts, int previousDay){
+
+    int index = tables[currentTableIndex].timeSlots[previousDay].indexWhere((slot) => slot.id == ts.id);
+    tables[currentTableIndex].timeSlots[previousDay][index] = ts;
+
+    //No need to notify listeners here.
+  }
+
   void removeSlot(TimeSlot ts){
 
     int index = indexOfParent(ts.parentId);
@@ -196,9 +213,25 @@ class Table_pr extends ChangeNotifier{
     notifyListeners();
   }
 
-  void removeTable(TimeTable timeTable){
+  void updateTable(int index, String title){
+    tables[index].title = title;
+    notifyListeners();
+  }
+
+  void removeTable(int id){
     
-    tables.remove(timeTable);    
+    tables.removeWhere((table) => table.id == id);    
+    notifyListeners();
+  }
+
+  void clearTable(int id){
+
+    int index = 0;
+    while(tables[index].id != id){
+      index++;
+    }
+
+    tables[index].clear();
     notifyListeners();
   }
 
@@ -218,15 +251,13 @@ class Table_pr extends ChangeNotifier{
     }
   }
 
-  void reformList(TimeSlot timeSlot, int prevDay){
+  void reformList(TimeSlot timeSlot, int previousDay){
     
-    if(timeSlot.day == prevDay){
+    if(timeSlot.day == previousDay){
       return;
     }
-
     int index = indexOfParent(timeSlot.parentId);
-    
-    tables[index].timeSlots[prevDay].remove(timeSlot);
+    tables[index].timeSlots[previousDay].removeWhere((slot) => slot.startTime == timeSlot.startTime);
     tables[index].add(timeSlot);
 
     //No need to notify listeners here.
@@ -252,5 +283,47 @@ class Table_pr extends ChangeNotifier{
       index++;
     }
     throw 'Parent TimeTable (_id: $id) NOT FOUND!';
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+class Color_pr extends ChangeNotifier{
+  
+  Color_pr({
+    required this.background,
+    required this.onBackground,
+    required this.foreground,
+    required this.shadow,
+    required this.shadow_alt,
+    required this.splash
+  });
+
+  Color background, onBackground, foreground, shadow_alt, shadow, splash;
+
+
+  void toLight(){
+    background = backgroundC;
+    onBackground = onBackgroundC;
+    foreground = foregroundC;
+    shadow = shadowC;
+    shadow_alt = shadow_altC;
+    splash = splashC;
+    
+    Prefs.setDarkMode(false);
+
+    notifyListeners();
+  }
+  void toDark(){
+    background = backgroundDarkC;
+    onBackground = onBackgroundDarkC;
+    foreground = foregroundDarkC;
+    shadow = shadowDarkC;
+    shadow_alt = shadow_altDarkC;
+    splash = splashDarkC;
+    
+    Prefs.setDarkMode(true);
+
+    notifyListeners();
   }
 }

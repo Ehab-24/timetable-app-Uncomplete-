@@ -1,116 +1,223 @@
 
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:timetable_app/Globals/ColorsAndGradients.dart';
 import 'package:timetable_app/Globals/Decorations.dart';
+import 'package:timetable_app/Globals/Providers.dart';
 import 'package:timetable_app/Globals/Reals.dart';
+import 'package:timetable_app/Globals/Styles.dart';
 import 'package:timetable_app/Globals/Utils.dart';
 import 'package:timetable_app/Globals/enums.dart';
-import 'package:timetable_app/Widgets/TimeTableWidget.dart';
+import 'package:timetable_app/Widgets/TimeTableScreen.dart';
 
 import '../Classes/TimeTable.dart';
+import '../Databases/ServicesPref.dart';
 
 class TimeTableTile extends StatelessWidget{
   const TimeTableTile({
     Key? key,
-    required this.table
+    required this.animate1,
+    required this.animate2,
+    required this.table,
   }) : super(key: key);
 
+  final bool animate1;
+  final bool animate2;
+  final TimeTable table;
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Column(
+      children: [
+
+        _AttributesChip(animate1: animate1, table: table),
+
+        Spaces.vertical20,
+
+        _MainTile(animate2: animate2, table: table),
+      ],
+    );
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class _MainTile extends StatelessWidget {
+  const _MainTile({
+    Key? key,
+    required this.animate2,
+    required this.table,
+  }) : super(key: key);
+
+  final bool animate2;
   final TimeTable table;
   final AssetImage tablePageHeaderImage = const AssetImage('assets/images/blobs_bk2.png');
 
   @override
   Widget build(BuildContext context) {
 
-    final double w = Utils.screenWidthPercentage(context, 1);
-    final double h = Utils.screenHeightPercentage(context, 1);
+    final Color_pr colorWatch = context.watch<Color_pr>();
+    
+    return AnimatedOpacity(
 
-    return Stack(
+      opacity: animate2? 1: 0,
+      curve: Curves.decelerate,
+      duration: Durations.d600,
 
-      clipBehavior: Clip.none,
+      child: PhysicalModel(
 
-      children: [
+        color: Colors.transparent,
+        shadowColor: colorWatch.shadow,
+        elevation: 16,
+        borderRadius: BorderRadius.circular(80),
 
-        Positioned(
-          left: 0,
-          top: h * 0.058,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.pink,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: _WorkLoadBarHeaders()
-          ),
-        ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
 
-        Positioned(
-          left: 40,
-          child: Container(
-          
-            decoration: Decorations.tableTileExternal,
-          
-            child: Material(
-              
-              type: MaterialType.transparency,
-              
-              child: InkWell(
-            
-                borderRadius: BorderRadius.circular(8),
-                onLongPress: (){
-                  Utils.showDeleteTableDialog(context, table);
-                },
-                onDoubleTap: (){},
-                onTap: (){
-                  currentTableId = table.id!;
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => 
-                        TimeTableWidget(timeTable: table, headerImage: tablePageHeaderImage,),
-                    )
-                  );
-                },
-            
-                child: Ink(
-              
-                  width: w * 0.8,
-                  decoration: Decorations.tableTileInternal,
-              
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 20,
-                      left: 20,
-                      bottom: 20,
-                    ),
-                    child: Column(
-            
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-            
-                        Text(
-                          table.title,
-                          style: const TextStyle(
-                            color: Colors.pink,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600
-                          ),
-                        ),
-            
-                        Spaces.vertical20,
-          
-                        _WorkLoadBars(table: table)
-                      ],
-                    ),
+            splashColor: colorWatch.splash,
+            highlightColor: colorWatch.splash,
+            borderRadius: BorderRadius.circular(20),
+
+            onTap: (){
+              var pageRouteBuilder = PageRouteBuilder(
+                  pageBuilder: ((context, animation, secondaryAnimation) => 
+                    TimeTableScreen(timeTable: table, headerImage: tablePageHeaderImage)
                   ),
-                ),
+                  transitionDuration: Durations.d500,
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) => 
+                    FadeThroughTransition(
+                      animation: animation, 
+                      secondaryAnimation: secondaryAnimation,
+                      fillColor: colorWatch.background,
+                      child: child,
+                    ),
+                );
+              Navigator.of(context).push(  
+                pageRouteBuilder
+              );
+            },
+            onLongPress: (){
+              Utils.showDeleteTableDialog(context, table);
+            },
+
+            child: Ink(
+            
+              width: Utils.screenWidthPercentage(context, 0.9),
+          
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+              decoration: Decorations.tableTile(colorWatch.onBackground),
+            
+              child: Column(
+            
+                crossAxisAlignment: CrossAxisAlignment.start,
+            
+                children: [
+
+                  Text(
+                    table.title,
+                    style: TextStyles.h2light(colorWatch.foreground),
+                  ),
+
+                  Spaces.vertical20,
+            
+                  _WorkLoadBars(table: table),
+                ],
               ),
             ),
           ),
-        ),
-      ],
+        )
+      ),
     );
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class _AttributesChip extends StatelessWidget {
+  const _AttributesChip({
+    Key? key,
+    required this.animate1,
+    required this.table,
+  }) : super(key: key);
+
+  final bool animate1;
+  final TimeTable table;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedScale(
+
+      duration: Durations.d500,
+      curve: Curves.easeOutQuint,
+      scale: animate1? 1: 0,
+
+      child: PhysicalModel(
+
+        elevation: 12,
+        color: Colors.transparent,
+        shadowColor: Colors.blueGrey.shade300,
+        borderRadius: BorderRadius.circular(80),
+    
+        child: Container(
+          decoration: Decorations.decoratedContainer,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+          height: 100,
+          child: Row(
+            children: [
+              
+              _RichText(text1: ' Last Modified:', text2: DateFormat('M-d-y').format(DateTime.now()),),
+              
+              const Spacer(),
+              
+              _RichText(text1: 'Total Slots:', text2: table.totalSlots.toString())
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RichText extends StatelessWidget {
+  const _RichText({
+    Key? key,
+    required this.text1,
+    required this.text2
+  }) : super(key: key);
+
+  final String text1, text2;
+
+  @override
+  Widget build(BuildContext context) {
+
+    final Color_pr colorWatch = context.watch<Color_pr>();
+
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: '$text1\n',
+            style: TextStyles.b4(Prefs.isDarkMode? Colors.white: colorWatch.foreground.withOpacity(0.75)),
+          ),
+          TextSpan(
+            text: text2,
+            style: TextStyles.bk4(Prefs.isDarkMode? Colors.white.withOpacity(0.8): colorWatch.foreground.withOpacity(0.75)),
+          ),
+        ]
+      ),
+    );
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class _WorkLoadBars extends StatelessWidget{
   const _WorkLoadBars({
@@ -123,7 +230,7 @@ class _WorkLoadBars extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    final double w = Utils.screenWidthPercentage(context, 1);
+    final Color_pr colorWatch = context.watch<Color_pr>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,57 +238,50 @@ class _WorkLoadBars extends StatelessWidget{
 
         double maxLoad = table.maxLoad;
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: buildWorkLoadBar(w, table.dayLoad(index), maxLoad),
+  
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Stack(  
+            clipBehavior: Clip.none,
+            children: [
+  
+              Text(
+                days[index].substring(0,1),
+                style: TextStyles.b2(colorWatch.foreground.withOpacity(0.5))
+              ),
+
+              Positioned(
+                left: 30, top: 6,
+                child: buildWorkLoadBar(table.dayLoad(index), maxLoad, colorWatch.foreground)
+              ),
+            ],
+          ),
         );
       }
-    )
-    );
+    ));
   }
 
-  Widget buildWorkLoadBar(double w, double hours, double maxLoad) {
+  Widget buildWorkLoadBar(double hours, double maxLoad, Color textcolor) {
     
     return Row(
       children: [
         Container(
-          width: w * 0.58 * hours / maxLoad + 16,
-          height: 16,
+          width: 400 * 0.52 * hours / maxLoad + 12,
+          height: 12,
           decoration: Decorations.workLoadBar
         ),
-        Spaces.horizontal10,
-        Text(
-          hours.toStringAsFixed(2),
-          // style: TextSTyle,
-        )
-      ],
-    );
-  }
-}
 
-class _WorkLoadBarHeaders extends StatelessWidget{
+        Spaces.horizontal20,
 
-  @override
-  Widget build(BuildContext context) {
-    
-    final double h = Utils.screenHeightPercentage(context, 1);
-  print(h);
-    return Column(
-
-      children: List<Widget>.generate(7, (index) => 
-        Padding(
-          padding: EdgeInsets.only(top: h * 0.015),
-          child: Text(
-            days[index].substring(0,1),
-            style: const TextStyle(
-
-              //TODO: supplied by main theme
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold
+        if(hours > 0)
+          Text(
+            hours.toStringAsFixed(2),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: textcolor,
+              fontSize: 14,
             ),
-          ),
-        )
-      )
+          )
+      ],
     );
   }
 }

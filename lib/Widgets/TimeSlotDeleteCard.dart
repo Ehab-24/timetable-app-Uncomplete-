@@ -20,101 +20,76 @@ class TimeSlotDeleteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final Color_pr colorWatch = context.watch<Color_pr>();
+
     return Dialog(
 
       backgroundColor: Colors.transparent,
 
-      child: Stack(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: Utils.screenWidthPercentage(context, 0.04)),
+        decoration: Decorations.decoratedContainer_alt(colorWatch.onBackground),
+        
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
 
-        clipBehavior: Clip.none,
-        alignment: Alignment.topCenter,
-
-        children: [
-
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: Utils.screenWidthPercentage(context, 0.04)),
-            
-            padding: const EdgeInsets.fromLTRB(16, 32, 16, 12),
-          
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(8),
+            IconButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+              }, 
+              icon: Icon(Icons.close, size: 28, color: colorWatch.foreground,)
             ),
-            
-            child: Column(
-          
-              mainAxisSize: MainAxisSize.min,
-          
-              children: [
 
-                const SizedBox(height: 40,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                children: [
 
-                const Text(
-                  'Item will be deleted permnently',
-                  style: TextStyle(
-                    color: Color.fromRGBO(55, 71, 79, 1),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400
+                  Text(
+                    'Item will be deleted permanently.',
+                    style: TextStyles.b4(colorWatch.foreground),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
 
-                const SizedBox(height: 20,),
+                  Spaces.vertical20,
+                
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+
+                        TextSpan(
+                          text: 'Do you want to delete table: ',
+                          style: TextStyles.b2(colorWatch.foreground),
+                        ),
+                        TextSpan(
+                          text: '"${timeSlot.title}"?',
+                          style: TextStyles.h2light(colorWatch.foreground),
+                        )
+                      ]
+                    ),  
+                  ),
+
+                  Spaces.vertical40,
               
-                const Text(
-                  'Do you want to delete this slot?',
-                  style: TextStyle(
-                    color: Color.fromRGBO(55, 71, 79, 1),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 20,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
-                const SizedBox(height: 40,),
-            
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: ButtonStyles.closeButton(Colors.blueGrey.shade800), 
-                      child: const Text(
-                        'No',
-                      ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Provider.of<Table_pr>(context,listen: false).removeSlot(timeSlot);
+                      Navigator.of(context).pop();
+                      Utils.showSnackBar(context, 'Slot deleted', seconds: 2);
+                    }, 
+                    child: const Text(
+                      'Yes',
                     ),
-
-                    Spaces.horizontal40,
-
-                    ElevatedButton(
-                      onPressed: () {
-                        Provider.of<Table_pr>(context,listen: false).removeSlot(timeSlot);
-                        Navigator.of(context).pop();
-                        Utils.showSnackBar(context, 'Slot deleted', seconds: 2);
-                      }, 
-                      child: const Text(
-                        'Yes',
-                      ),
-                    ),
-                  ],
-                )
-              ],
+                  )
+                ],
+              ),
             ),
-          ),
-          
-          //Circular Indicator
-          const Positioned(
-            top: -30,
-            child: CircleAvatar(
-              foregroundColor: Color.fromRGBO(238, 238, 238, 1),
-              backgroundColor: Color.fromRGBO(66, 66, 66, 1),
-              radius: 30,
-              child: Icon(Icons.delete, size: 30,),
-            ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

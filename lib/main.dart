@@ -6,25 +6,19 @@ import 'package:provider/provider.dart';
 import 'package:timetable_app/Classes/Reminder.dart';
 import 'package:timetable_app/Databases/LocalDatabase.dart';
 import 'package:timetable_app/Databases/ServicesPref.dart';
+import 'package:timetable_app/Globals/ColorsAndGradients.dart';
 import 'package:timetable_app/Globals/Reals.dart';
+import 'package:timetable_app/Screens/ProfileScreen.dart';
 import 'package:timetable_app/Screens/RemindersScreen.dart';
 import 'Classes/TimeTable.dart';
 import 'package:timetable_app/Globals/Providers.dart';
 
 import 'Globals/enums.dart';
-import 'Screens/CreateFirstTableScreen.dart';
+import 'Screens/OnboardingScreen.dart';
 import 'Screens/HomeScreen.dart';
-import 'Screens/ScheduleScreen.dart';
 import 'Screens/TablesScreen.dart';
 
-/*
-  Provider and Database managment go hand to hand.
-  In many functions, they are modified simultaneoulsy
-  however, Provider DOES NOT handle the Database.
-*/
 
-late List<TimeTable> timeTables;
-late List<Reminder> reminders;
 
 Future main() async {
 
@@ -40,6 +34,16 @@ Future main() async {
         ChangeNotifierProvider(create: (_) => Reminder_pr(reminders)),
         ChangeNotifierProvider(create: (_) => Day_pr(DateTime.now().weekday - 1)),
         ChangeNotifierProvider(create: (_) => Ticker_pr()),
+        ChangeNotifierProvider(create: (_) => NewReminder_pr()),
+        ChangeNotifierProvider(create: (_) => NewSlot_pr()),
+        ChangeNotifierProvider(create: (_) => Color_pr(
+          background: Prefs.isDarkMode? backgroundDarkC: backgroundC, 
+          onBackground: Prefs.isDarkMode? onBackgroundDarkC: onBackgroundC, 
+          foreground: Prefs.isDarkMode? foregroundDarkC: foregroundC, 
+          shadow: Prefs.isDarkMode? shadowDarkC: shadowC,
+          shadow_alt: Prefs.isDarkMode? shadow_altDarkC: shadow_altC, 
+          splash: Prefs.isDarkMode? splashDarkC: splashC,
+        )),
       ],
       child: const App(),
     )
@@ -52,36 +56,54 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    final Color_pr colorWatch = context.watch<Color_pr>();
     final Screen_pr screenWatch = context.watch<Screen_pr>();
     final Table_pr tableWatch = context.watch<Table_pr>();
 
     Widget currentScreen = screenWatch.currentScreen == Screens.home
-      ? tableWatch.tables.isEmpty ? const CreateFirstTableScreen()
+      ? tableWatch.tables.isEmpty ? const OnboardingScreen()
       : const HomeScreen() : screenWatch.currentScreen == Screens.mytables
       ? const TablesScreen() : screenWatch.currentScreen == Screens.reminders
-      ? const RemindersScreen() : const ScheduleScreen();
+      ? const RemindersScreen() : const ProfileScreen();
 
     var pageTransitionSwitcher = PageTransitionSwitcher(
-        
         duration: Durations.d500,
         reverse: screenWatch.currentScreen == Screens.home,
         transitionBuilder: ((child, animation, secondaryAnimation) => 
-        
-          SharedAxisTransition(
-            animation: animation, 
-            secondaryAnimation: secondaryAnimation,
-            fillColor: Colors.blueGrey.shade900,
-            transitionType: SharedAxisTransitionType.vertical,
+          FadeScaleTransition(
+            animation: animation,
             child: child,
           )
         ),
-
         child: currentScreen,
       );
 
     return MaterialApp(
-  
-      theme: themeData,
+
+      theme: ThemeData(
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: Colors.grey,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.pink,
+            foregroundColor: colorWatch.onBackground,
+            fixedSize: const Size.fromWidth(100),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            shadowColor: colorWatch.shadow_alt,
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50)
+            ),
+          )
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            side: BorderSide(color: colorWatch.foreground, width: 0.5),
+            foregroundColor: colorWatch.foreground
+          )
+        )
+      ),
   
       debugShowCheckedModeBanner: false,
   
@@ -100,4 +122,7 @@ Future<void> _initApp() async {
   TimeTable.sortAll(timeTables);
 
   reminders = await LocalDatabase.instance.readAllReminders();
+  Reminder.sortAll(reminders);
+
+  currentTableIndex = Prefs.homeTable;
 }

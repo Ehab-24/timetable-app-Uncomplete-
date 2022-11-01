@@ -1,6 +1,8 @@
 
+// ignore_for_file: unnecessary_this
+
 import 'package:flutter/material.dart';
-import 'package:timetable_app/Miscellaneous/ExtansionMethods.dart';
+import 'package:timetable_app/Miscellaneous/ExtensionMethods.dart';
 
 import '../Globals/enums.dart';
 
@@ -42,6 +44,15 @@ class TimeSlot{
     startTime:startTime??this.startTime,
     endTime:endTime??this.endTime,
   );
+
+  bool isSameAs(TimeSlot ts){
+    return this.title == ts.title
+    && this.day == ts.day
+    && this.startTime == ts.startTime
+    && this.endTime == ts.endTime
+    && this.venue == ts.venue
+    && this.subtitle == ts.subtitle;
+  }
   
 //Hours (as double) between start and end time of a time slot.
   double get span 
