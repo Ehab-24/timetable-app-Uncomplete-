@@ -1,9 +1,7 @@
 
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
-import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Classes/TimeSlot.dart';
 import 'package:timetable_app/Databases/LocalDatabase.dart';
@@ -16,6 +14,7 @@ import '../Databases/ServicesPref.dart';
 import '../Globals/Providers.dart';
 import '../Globals/Reals.dart';
 import '../Globals/Utils.dart';
+import '../Miscellaneous/ExtensionMethods.dart';
 
 
 
@@ -55,69 +54,83 @@ class _TimeSlotScreenState extends State<TimeSlotScreen> {
     final Color_pr colorWatch = context.watch<Color_pr>();
     final NewSlot_pr slotWatch = context.watch<NewSlot_pr>();
 
-    return Scaffold(
+    return GestureDetector(
 
-      backgroundColor: colorWatch.background,
+      onTap: (){
+        FocusManager.instance.primaryFocus!.unfocus();
+      },
 
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.fromLTRB(50, 0, 20, 30),
-        child: AnimatedDualFAB(
-          onSave: _onSave,
-          scaleSomparator: slotWatch.timeSlot.isSameAs(widget.timeSlot),
+      child: Scaffold(
+    
+        backgroundColor: colorWatch.background,
+    
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.fromLTRB(50, 0, 20, 30),
+          child: AnimatedDualFAB(
+            onSave: _onSave,
+            scaleSomparator: slotWatch.timeSlot.isSameAs(widget.timeSlot),
+          ),
         ),
-      ),
-
-      body: SingleChildScrollView(
-
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
-
-        child: Form(
-          key: Utils.formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              
-              const _TimePickers(),
-        
-              Spaces.vertical40,
-        
-              const _WeekDayChips(),
-
-              Spaces.vertical20,
-        
-              BackgroundTextMini(title: 'Title', color: Prefs.isDarkMode? Colors.white54: Colors.black26,),
-        
-              TextFieldBold(
-                initialValue: slotWatch.timeSlot.title,
-                onChanged: (title) => slotReader.setTitle(title),
-                validator: ((title){
-                  if(title == null || title == ''){
-                    return 'Title must not be empty';
-                  }
-                }),
-              ),
-              
-              Spaces.vertical20,
-
-              BackgroundTextMini(title: 'Venue', color: Prefs.isDarkMode? Colors.white54: Colors.black26,),
-        
-              TextFieldBold(
-                initialValue: slotWatch.timeSlot.venue, 
-                onChanged: (venue) => slotReader.setVenue(venue),
-              ),
-              
-              Spaces.vertical20,
-        
-              BackgroundTextMini(title: 'Subtitle', color: Prefs.isDarkMode? Colors.white54: Colors.black26,),
-        
-              TextFieldBold(
-                initialValue: slotWatch.timeSlot.subtitle, 
-                onChanged: (subtitle) => slotReader.setSubtitle(subtitle),
-              ),
-
-              Spaces.vertical80
-            ],
+    
+        body: SingleChildScrollView(
+    
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+    
+          child: Form(
+            key: Utils.formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                
+                const _TimePickers(),
+          
+                Spaces.vertical40,
+          
+                const _WeekDayChips(),
+    
+                Spaces.vertical20,
+          
+                BackgroundTextMini(title: 'Title', color: Prefs.isDarkMode? Colors.white54: Colors.black26,),
+          
+                Stack(
+                  children: [
+                    PhysicalModel(
+                      color: Colors.transparent,
+                      shadowColor: colorWatch.shadow,
+                      elevation: 16,
+                      borderRadius: BorderRadius.circular(80),
+                      child: const SizedBox(
+                        width: double.infinity,
+                        height: 104,
+                      ),
+                    ),
+                    TextFieldBold(
+                      maxLength: 8,
+                      initialValue: slotWatch.timeSlot.title,
+                      onChanged: (title) => slotReader.setTitle(title),
+                      validator: ((title){
+                        if(title == null || title == ''){
+                          return 'Title must not be empty';
+                        }
+                        return null;
+                      })
+                    ),
+                  ],
+                ),
+                
+                Spaces.vertical40,
+    
+                BackgroundTextMini(title: 'Subtitle', color: Prefs.isDarkMode? Colors.white54: Colors.black26,),
+          
+                TextFieldBold(
+                  initialValue: slotWatch.timeSlot.subtitle, 
+                  onChanged: (subtitle) => slotReader.setSubtitle(subtitle),
+                ),
+    
+                Spaces.vertical80
+              ],
+            ),
           ),
         ),
       ),
@@ -222,9 +235,6 @@ class _WeekDayChipsState extends State<_WeekDayChips> {
     bool isSelected = slotWatch.timeSlot.day == index;
     double _left = index > 3? (index - 4) * w * 0.22 + w * 0.1 :index * w * 0.22;
     double _top = index > 3? w * 0.2: 0;
-    Color _color = isSelected? Colors.pink.shade400: Colors.pink.shade300;
-
-    final _opacity = isSelected? 0.75: 0.5;
 
     return AnimatedPositioned(
       
@@ -244,17 +254,7 @@ class _WeekDayChipsState extends State<_WeekDayChips> {
           alignment: Alignment.center,
           margin: EdgeInsets.all(w * 0.0375),
           
-          decoration: BoxDecoration(
-            color: _color,
-            borderRadius: BorderRadius.circular(500),
-            boxShadow: [
-              BoxShadow(
-                offset: const Offset(0, 2), 
-                color: Prefs.isDarkMode? Colors.white.withOpacity(_opacity): Colors.black.withOpacity(_opacity), 
-                blurRadius: isSelected? 10: 6
-              )
-            ]
-          ),
+          decoration: Decorations.dayChip(isSelected),
           
           child: Text(
             days[index].substring(0,3),
@@ -290,7 +290,6 @@ class _TimePickersState extends State<_TimePickers> {
   @override
   Widget build(BuildContext context) {
 
-    final Color_pr colorWatch = context.watch<Color_pr>();
     final NewSlot_pr slotWatch = context.watch<NewSlot_pr>();
 
     final width = Utils.screenWidthPercentage(context, 0.43);
@@ -303,7 +302,7 @@ class _TimePickersState extends State<_TimePickers> {
         Column(
           children: [
             Text(
-              slotWatch.timeSlot.startTime.format(context),
+              slotWatch.timeSlot.startTime.hour12Format(),
               style: TextStyles.bk4(Prefs.isDarkMode? Colors.white60: Colors.black38),
             ),
             Spaces.vertical10,
@@ -312,15 +311,7 @@ class _TimePickersState extends State<_TimePickers> {
               width: width, 
               label: 'Start Time', 
               icon: Icons.access_time,
-              onTap: (){
-                _onTapTimePicker(
-                  context,
-                  slotWatch.timeSlot.startTime, 
-                  (newVal) {
-                    slotReader.setStartTime(newVal);
-                  }
-                );
-              }, 
+              onTap: _onTapStartTime
             ),
           ],
         ),
@@ -331,19 +322,11 @@ class _TimePickersState extends State<_TimePickers> {
               width: width, 
               label: 'End Time', 
               icon: Icons.access_time,
-              onTap: (){
-                _onTapTimePicker(
-                  context,
-                  slotWatch.timeSlot.endTime, 
-                  (newVal) {
-                    slotReader.setEndTime(newVal);
-                  }
-                );
-              }, 
+              onTap: _onTapEndTime
             ),
             Spaces.vertical10,
             Text(
-              slotWatch.timeSlot.endTime.format(context),
+              slotWatch.timeSlot.endTime.hour12Format(),
               style: TextStyles.bk4(Prefs.isDarkMode? Colors.white60: Colors.black38),
             ),
           ],
@@ -352,168 +335,31 @@ class _TimePickersState extends State<_TimePickers> {
     );
   }
 
-  void _onTapTimePicker(BuildContext context, TimeOfDay initialValue, void Function(TimeOfDay) onChange) {
-    Navigator.of(context).push(
-      showPicker(
-        hourLabel: '',
-        minuteLabel: '',
-        accentColor: Colors.pink,
-        value: initialValue,
-        displayHeader: false,
-        onChange: onChange,
-        buttonsSpacing: 8,
-        buttonStyle: ElevatedButton.styleFrom(
-          backgroundColor: Colors.pink,
-          foregroundColor: Colors.white,
-        ),
-        cancelButtonStyle: ElevatedButton.styleFrom()
-      ),
+  void _onTapStartTime () async {
+    FocusManager.instance.primaryFocus!.unfocus();
+    slotReader.setStartTime(
+      await showTimePicker(
+        context: context,
+        helpText: 'Starting Time',
+        cancelText: 'Cancel',
+        confirmText: 'Ok',
+        initialEntryMode: TimePickerEntryMode.dialOnly,
+        initialTime: slotReader.timeSlot.startTime,
+      ) ?? slotReader.timeSlot.startTime
     );
   }
+  void _onTapEndTime () async {
+    FocusManager.instance.primaryFocus!.unfocus();
+    slotReader.setEndTime(
+      await showTimePicker(
+        context: context,
+        helpText: 'Ending Time',
+        cancelText: 'Cancel',
+        confirmText: 'Ok',
+        initialEntryMode: TimePickerEntryMode.dialOnly,
+        initialTime: slotReader.timeSlot.endTime,
+      ) ?? slotReader.timeSlot.endTime
+    );
+    print(slotReader.timeSlot.endTime.period.toString(),);
+  }
 }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-// class _TimerRow extends StatelessWidget {
-//   const _TimerRow({
-//     Key? key,
-//     required this.color,
-//     required this.label,
-//     required this.initialValue,
-//     required this.onChange,
-//   }) : super(key: key);
-
-//   final Color color;
-//   final String label;
-//   final TimeOfDay initialValue;
-//   final void Function(TimeOfDay) onChange;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Row(
-                
-//       children: [
-                
-//         Text(
-//           label,
-//           style: TextStyles.b4(color: color),
-//         ),
-                
-//         const Spacer(flex: 1),
-                
-//         Text(
-//           initialValue.toString().substring(10,15),
-//           style: TextStyles.b3()
-//         ),
-                
-//         const Spacer(flex: 3),
-        
-//         ElevatedButton(
-//           style: ElevatedButton.styleFrom(
-//             backgroundColor: color
-//           ),
-//           onPressed: (){
-//             FocusManager.instance.primaryFocus?.unfocus();
-
-//             Navigator.of(context).push(
-//               showPicker(
-//                 hourLabel: '',
-//                 minuteLabel: '',
-//                 accentColor: color,
-//                 value: initialValue,
-//                 displayHeader: false,
-//                 onChange: onChange,
-//                 buttonsSpacing: 8,
-//                 buttonStyle: ElevatedButton.styleFrom(
-//                   backgroundColor: color,
-//                   foregroundColor: Colors.white,
-//                 ),
-//                 cancelButtonStyle: ElevatedButton.styleFrom()
-//               ),
-//             );
-//           },
-//           child: const Icon(Icons.edit, color: Colors.white),
-//         ),
-//       ],
-//     );
-//   }
-// }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-// class _DropdownButton extends StatelessWidget {
-//   const _DropdownButton({
-//     Key? key,
-//     required this.color,
-//     required this.onChanged,
-//     required this.currentDay,
-//   }) : super(key: key);
-
-//   final Color color;
-//   final String currentDay;
-//   final void Function(String?)? onChanged;
-
-//   @override
-//   Widget build(BuildContext context) {
-
-//     return DropdownButtonHideUnderline(
-//       child: DropdownButton<String>(
-    
-//         value: currentDay,
-//         isExpanded: true,
-                      
-//         style: TextStyle(
-//           color: Colors.blueGrey.shade800
-//         ),
-    
-//         iconSize: 32,
-//         iconEnabledColor: color,
-        
-//         items: days.map((day)
-//           => DropdownMenuItem<String>(
-//             value: day,
-//             child: Text(
-//               day,
-//               style: TextStyle(
-//                 color: Colors.blueGrey.shade800
-//               ),
-//             ),
-//           )).toList(),
-        
-//         onChanged: onChanged
-//       ),
-//     );
-//   }
-// }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-// class _InputField extends StatelessWidget {
-//   const _InputField({
-//     Key? key,
-//     required this.label,
-//     required this.onSaved,
-//     required this.color,
-//     required this.initialValue,
-//     this.validator,
-//   }) : super(key: key);
-
-//   final String label;
-//   final String initialValue;
-//   final Color color;
-//   final Function(String?) onSaved;
-//   final String? Function(String?)? validator;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return TextFormField(
-//       onSaved: onSaved,
-//       style: TextStyle(
-//         color: Colors.blueGrey.shade800,
-//       ),
-//       initialValue: initialValue,
-//       validator: validator,
-//       decoration: Decorations.textFormField(label, color),
-//     );
-//   }
-// }

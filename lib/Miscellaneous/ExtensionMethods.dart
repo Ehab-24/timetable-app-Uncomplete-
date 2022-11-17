@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 
-extension TimeExtension on TimeOfDay{
+extension ExtensionOnTimeOfDay on TimeOfDay{
 
   bool operator <(TimeOfDay t){
 
@@ -26,9 +26,13 @@ extension TimeExtension on TimeOfDay{
     }
     return false;
   }
+
+  String hour12Format() {
+    return '${this.hourOfPeriod}:${this.minute} ${this.period.toString().split('.')[1]}';
+  }
 }
 
-extension StringEx on String{
+extension ExtensionOnString on String{
 
   TimeOfDay toTimeOfDay(){
     String s = this.substring(10, this.length - 1);
@@ -36,7 +40,7 @@ extension StringEx on String{
   }
 }
 
-extension DateTimeExtenstion on DateTime{
+extension ExtensionOnDateTime on DateTime{
 
   bool operator >(DateTime dt){
 

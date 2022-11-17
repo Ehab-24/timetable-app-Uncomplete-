@@ -10,6 +10,9 @@ import 'package:timetable_app/Globals/Decorations.dart';
 import 'package:timetable_app/Globals/Reals.dart';
 import 'package:timetable_app/Globals/Utils.dart';
 import 'package:timetable_app/Widgets/Helpers.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/tap_bounce_container.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 import '../Classes/Reminder.dart';
 import '../Databases/LocalDatabase.dart';
@@ -115,10 +118,7 @@ class _ReminderTileState extends State<ReminderTile> {
                       IconButton(
                         tooltip: 'Delete',
                         icon: Icon(Icons.delete_forever, color: colorWatch.foreground,),
-                        onPressed: () async {
-                          await LocalDatabase.instance.deleteReminder(widget.reminder.id!);
-                          remReader.remove(widget.reminder);
-                        },
+                        onPressed: () => _onDelete(colorWatch.onBackground),
                       ),
                     ],
                   )
@@ -129,5 +129,12 @@ class _ReminderTileState extends State<ReminderTile> {
         ),
       ),
     );
+  }
+
+  void _onDelete(Color color) async {
+    Utils.showSnackBar(context, 'Item deleted');
+
+    await LocalDatabase.instance.deleteReminder(widget.reminder.id!);
+    remReader.remove(widget.reminder);
   }
 }

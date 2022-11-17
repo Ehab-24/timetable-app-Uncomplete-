@@ -3,6 +3,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:timetable_app/Classes/NotificationApi.dart';
 import 'package:timetable_app/Classes/Reminder.dart';
 import 'package:timetable_app/Databases/LocalDatabase.dart';
 import 'package:timetable_app/Databases/ServicesPref.dart';
@@ -45,14 +46,35 @@ Future main() async {
           splash: Prefs.isDarkMode? splashDarkC: splashC,
         )),
       ],
+
       child: const App(),
     )
   );
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
-  
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+
+  @override
+  void initState() {  
+    super.initState();
+
+    NotificationApi.init(true);
+    listenNotifications();
+  }
+
+  void listenNotifications() =>
+    NotificationApi.onNotofication.stream.listen(onClickedNotification);
+
+  void onClickedNotification(String? payload) =>
+    context.read<Screen_pr>().setScreen(Screens.mytables);
+
   @override
   Widget build(BuildContext context) {
 
@@ -80,30 +102,7 @@ class App extends StatelessWidget {
 
     return MaterialApp(
 
-      theme: ThemeData(
-        textSelectionTheme: const TextSelectionThemeData(
-          cursorColor: Colors.grey,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.pink,
-            foregroundColor: colorWatch.onBackground,
-            fixedSize: const Size.fromWidth(100),
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            shadowColor: colorWatch.shadow_alt,
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50)
-            ),
-          )
-        ),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(color: colorWatch.foreground, width: 0.5),
-            foregroundColor: colorWatch.foreground
-          )
-        )
-      ),
+      theme: themeData(colorWatch),
   
       debugShowCheckedModeBanner: false,
   
@@ -113,16 +112,33 @@ class App extends StatelessWidget {
 }
 
 Future<void> _initApp() async {
-
+  
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: ([]));
   
-  await Prefs.init();
+  await initPreferences();
 
+  await initLocalData();
+}
+  
+
+Future<void> initPreferences() async {
+  await Prefs.init();
+  currentTableIndex = Prefs.homeTable;
+}
+
+Future<void> initLocalData() async {
   timeTables = await LocalDatabase.instance.readAllTimeTables();
   TimeTable.sortAll(timeTables);
 
   reminders = await LocalDatabase.instance.readAllReminders();
   Reminder.sortAll(reminders);
 
-  currentTableIndex = Prefs.homeTable;
+  await removeUotdatedReminders();
+}
+
+Future<void> removeUotdatedReminders() async {
+  while(reminders.isNotEmpty && DateTime.now().isAfter(reminders[0].dateTime)){
+    await LocalDatabase.instance.deleteReminder(reminders[0].id!);
+    reminders.removeAt(0);
+  }
 }

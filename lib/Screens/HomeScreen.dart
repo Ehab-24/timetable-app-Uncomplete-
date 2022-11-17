@@ -116,7 +116,7 @@ class _HomeBodyState extends State<HomeBody> {
               curve: Curves.easeOutQuint,
               offset: Offset(animate1? 0: 0.3, 0),
               
-              child: _ReminderTile(),
+              child: const _ReminderTile(),
             ),
           ),
 

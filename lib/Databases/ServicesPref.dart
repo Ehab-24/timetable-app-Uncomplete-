@@ -8,6 +8,7 @@ class Prefs {
   static const kUsername = 'username';
   static const kHomeTable = 'home-table';
   static const kDarkMode = 'dark-mode';
+  static const kDateCreated = 'date-created';
 
 
 /* ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ Fields ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ */
@@ -31,8 +32,17 @@ class Prefs {
   static Future<void> setHomeTable(int index) async =>
     await preferences.setInt(kHomeTable, index);
     
-  static bool get isDarkMode=>
+  static bool get isDarkMode =>
     preferences.getBool(kDarkMode) ?? false;
   static Future<void> setDarkMode(bool val) async =>
     await preferences.setBool(kDarkMode, val);
+    
+  static DateTime get dateCreated {
+    String? dt = preferences.getString(kDateCreated);
+    return dt == null
+    ? DateTime.now()
+    : DateTime.parse(dt);
+  }
+  static Future<void> setDateCreated(DateTime dt) async =>
+    await preferences.setString(kDateCreated, dt.toIso8601String());
 }

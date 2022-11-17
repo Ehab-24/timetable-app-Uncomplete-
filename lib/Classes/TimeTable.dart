@@ -13,6 +13,7 @@ class TimeTable{
 
   int? id;
   String title;
+  DateTime lastModified;
 
   //Each list represents a day of week.
   List<List<TimeSlot>> timeSlots = List.generate(7, (index) => []);
@@ -90,16 +91,18 @@ class TimeTable{
   TimeTable({
     this.id,
     required this.title,
+    required this.lastModified
   });
 
   TimeTable copyWith({
     String? title,
     int? id,
-    int? color
+    int? color,
+    DateTime? lastModified
   }) =>
     TimeTable(
       id: id ?? this.id,
-      // color: color ?? this.color,
+      lastModified: lastModified ?? this.lastModified,
       title: title ?? this.title,
     );
   
@@ -178,49 +181,21 @@ class TimeTable{
         continue;
       }
       if(timeSlot.startTime < list[i].endTime && timeSlot.endTime > list[i].startTime){
-        throw 'Clash with "${list[i].title}", which spans from ${list[i].startTime.hour}:${list[i].startTime.minute} to ${list[i].endTime.hour}:${list[i].endTime.minute} on ${days[list[i].day]}';
+        throw 'Clash with "${list[i].title}" which spans from ${list[i].startTime.hour}:${list[i].startTime.minute} to ${list[i].endTime.hour}:${list[i].endTime.minute} on ${days[list[i].day]}.';
       }
     }
   }
 
   Map<String, Object?> toJson() => {
       TimeTableFields.id: id,
-      TimeTableFields.title: title
+      TimeTableFields.title: title,
+      TimeTableFields.lastModified: lastModified.toIso8601String()
     };
 
   static TimeTable fromJson(Map<String, Object?> json) =>
     TimeTable(
-      // color: json[TimeTableFields.color] as int,
+      lastModified: DateTime.parse(json[TimeTableFields.lastModified] as String),
       title: json[TimeTableFields.title] as String,
       id: json[TimeTableFields.id] as int,
     );
-
-/*  ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ UTILITY ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~*/
-  
-  // TimeOfDay findMin(){
-
-  //   TimeOfDay min = const TimeOfDay(hour: 23, minute: 59);
-    
-  //   for(int i = 0; i < timeSlots.length; i++){
-  //     for(int j = 0; j < timeSlots[i].length; j++){
-  //       if(timeSlots[i][j].startTime < min){
-  //         min = timeSlots[i][j].startTime;
-  //       }
-  //     }
-  //   }
-  //   return min;
-  // }
-  // TimeOfDay findMax(){
-
-  //   TimeOfDay max = const TimeOfDay(hour: 0, minute: 0);
-
-  //   for(int i = 0; i < timeSlots.length; i++){
-  //     for(int j = 0; j < timeSlots[i].length; j++){
-  //       if(timeSlots[i][j].endTime > max){
-  //         max = timeSlots[i][j].endTime;
-  //       }
-  //     }
-  //   }
-  //   return max;
-  // }
 }

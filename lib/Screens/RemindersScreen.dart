@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Globals/ColorsAndGradients.dart';
 import 'package:timetable_app/Globals/Decorations.dart';
@@ -10,8 +11,10 @@ import 'package:timetable_app/Globals/Utils.dart';
 import 'package:timetable_app/Globals/enums.dart';
 import 'package:timetable_app/Widgets/Helpers.dart';
 import 'package:timetable_app/Widgets/LinearFlowFAB.dart';
+import 'package:top_snackbar_flutter/tap_bounce_container.dart';
 
 import '../Classes/Reminder.dart';
+import '../Databases/ServicesPref.dart';
 import '../Globals/Providers.dart';
 import '../Widgets/EditReminderScreen.dart';
 import '../Widgets/ReminderTile.dart';
@@ -60,15 +63,15 @@ class _RemindersScreenState extends State<RemindersScreen> {
         body: SingleChildScrollView(
 
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              const BackgroundText(title: 'Reminders'),
+              BackgroundText(title: 'Reminders', color: Prefs.isDarkMode? Colors.white30: Colors.black12),
 
-              ReminderHeader(animate: ticker > 2),
+              HeaderTile(animate: ticker > 2),
 
               Spaces.vertical60,
 
@@ -84,7 +87,6 @@ class _RemindersScreenState extends State<RemindersScreen> {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 class RemindersList extends StatelessWidget{
 
@@ -154,8 +156,8 @@ class _AddButton extends StatelessWidget {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class ReminderHeader extends StatelessWidget {
-  const ReminderHeader({
+class HeaderTile extends StatelessWidget {
+  const HeaderTile({
     Key? key,
     required this.animate,
   }) : super(key: key);
@@ -166,6 +168,7 @@ class ReminderHeader extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final Color_pr colorWatch = context.watch<Color_pr>();
+    final Reminder_pr remWatch = context.watch<Reminder_pr>();
 
     return AnimatedOpacity(
 
@@ -189,13 +192,48 @@ class ReminderHeader extends StatelessWidget {
             
             width: double.infinity,
             height: 120,
-            alignment: const Alignment(0, -0.3),
+            alignment: Alignment.centerLeft,
             decoration: Decorations.decoratedContainer,
         
-            // child: Text(
-            //   'Reminders',
-            //   style: TextStyles.bk1(),
-            // ),
+            child: Row(
+              children: [
+                
+                const Spacer(),
+
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Last Modified: ',
+                      style: TextStyles.b2(colorWatch.background),
+                    ),
+                    Spaces.vertical10,
+                    Text(
+                      DateFormat('MM-dd-yy').format(DateTime.now()),
+                      style: TextStyles.b3(colorWatch.background),
+                    ),
+                  ],
+                ),
+
+                const Spacer(),
+
+                HorzDividerMini(color: colorWatch.background,),
+
+                const Spacer(),
+
+                Text(
+                  'Total: ',
+                  style: TextStyles.b2(colorWatch.background),
+                ),
+                Spaces.horizontal10,
+                Text(
+                  remWatch.reminders.length.toString(),
+                  style: TextStyles.h1light(colorWatch.background),
+                ),
+
+                const Spacer()
+              ],
+            ),
           ),
         ),
       ),

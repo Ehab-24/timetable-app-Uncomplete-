@@ -9,10 +9,10 @@ class TextStyles{
       letterSpacing: 0.8,
       fontWeight: FontWeight.w600
     );
-  static const b5 = TextStyle(
+  static b5(Color color) => TextStyle(
       fontSize: 16,
       fontStyle: FontStyle.italic,
-      color: Color.fromRGBO(224, 224, 224, 1)
+      color: color
     );
   static TextStyle b4(Color color) => TextStyle(
       color: color,
@@ -45,7 +45,8 @@ class TextStyles{
     fontSize: 26,
     fontWeight: FontWeight.w500
   );
-  static const TextStyle bUltra =  TextStyle(
+  static TextStyle bUltra(Color color) =>  TextStyle(
+    color: color,
     fontFamily: 'Ultra',
     fontSize: 12,
     letterSpacing: 1

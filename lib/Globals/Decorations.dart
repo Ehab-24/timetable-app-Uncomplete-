@@ -1,22 +1,35 @@
 
-import 'package:flutter/material.dart';
-import 'package:timetable_app/Globals/Styles.dart';
+// ignore_for_file: no_leading_underscores_for_local_identifiers
 
+import 'package:flutter/material.dart';
+
+import '../Databases/ServicesPref.dart';
 import 'ColorsAndGradients.dart';
 import 'Utils.dart';
 
 class Decorations{
 
-  static const BoxDecoration firstTableScreen = BoxDecoration(
-      gradient: RadialGradient(
-        colors: [Color.fromARGB(255, 156, 27, 216), Color.fromRGBO(69, 39, 160, 1)],
+  static const BoxDecoration firstTableScreenImage = BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage('assets/images/bubbles-bk.jpg'),
+        fit: BoxFit.cover,
+        colorFilter: ColorFilter.mode(Color.fromRGBO(224, 64, 251, 1), BlendMode.overlay),
+      ),
+    );
+  static const BoxDecoration firstTableScreenGradient = BoxDecoration(
+    gradient: RadialGradient(
+        colors: [Colors.black87, Color.fromRGBO(0, 0, 0, 0.75)],
         center: Alignment(0.85, 0.9),
-        radius: 3
-      )
+        radius: 2.5
+      ),
     );
   static BoxDecoration popUpCard = BoxDecoration(
       color: Colors.grey.shade200,
       borderRadius: BorderRadius.circular(8),
+    );
+  static BoxDecoration smallButton = BoxDecoration(
+      borderRadius: BorderRadius.circular(8),
+      gradient: Gradients.primary
     );
   static const InputDecoration titleTextField = InputDecoration(
       labelText: 'Title',
@@ -55,12 +68,12 @@ class Decorations{
     borderRadius: BorderRadius.circular(20),
     color: color,
   );
-  static BoxDecoration progressIndicator = BoxDecoration(
+  static BoxDecoration progressIndicator(Color shadowColor) => BoxDecoration(
     color: Colors.pink,
     borderRadius: BorderRadius.circular(500),
-    boxShadow: const [               
+    boxShadow: [               
       BoxShadow(
-        color: Colors.black45,
+        color: shadowColor,
         blurRadius: 10
       )
     ]
@@ -122,8 +135,7 @@ class Decorations{
   );
   static const BoxDecoration homeImage = BoxDecoration(
     image: DecorationImage(
-      // image: AssetImage('assets/images/home_bk.jpg'),
-      image: AssetImage('assets/images/landscape.jpg'),
+      image: AssetImage('assets/images/home-bk.jpg'),
       fit: BoxFit.cover,
     ),
   );
@@ -147,13 +159,48 @@ class Decorations{
     color: color,
     borderRadius: BorderRadius.circular(20),
   );
+  static BoxDecoration dayChip(bool isSelected) { 
+    final _opacity = isSelected? 0.75: 0.5;
+    final Color _shadowColor = 
+      Prefs.isDarkMode? Colors.white.withOpacity(_opacity): Colors.black.withOpacity(_opacity);
+
+    return BoxDecoration(
+      color: isSelected? Colors.pink.shade400: Colors.pink.shade300,
+      borderRadius: BorderRadius.circular(500),
+      boxShadow: [
+        BoxShadow(
+          offset: const Offset(0, 2), 
+          color: _shadowColor.withOpacity(_opacity),
+          blurRadius: isSelected? 10: 6
+        )
+      ]
+    );
+  }
+  static BoxDecoration dayChip_alt(bool isSelected) { 
+    final _opacity = isSelected? 0.75: 0.5;
+    final Color _shadowColor = 
+      Prefs.isDarkMode? Colors.white.withOpacity(_opacity): Colors.black.withOpacity(_opacity);
+
+    return BoxDecoration(
+      color: isSelected
+      ? const Color.fromRGBO(233, 30, 119, 1)
+      : const Color.fromRGBO(236, 64, 148, 1),
+      borderRadius: BorderRadius.circular(500),
+      boxShadow: [
+        BoxShadow(
+          offset: const Offset(0, 2), 
+          color: _shadowColor.withOpacity(_opacity),
+          blurRadius: isSelected? 10: 6
+        )
+      ]
+    );
+  }
   static BoxDecoration FAB(Color color) => BoxDecoration(
     shape: BoxShape.circle,
     boxShadow: [
       BoxShadow(
         color: color.withOpacity(0.5),
         blurRadius: 8,
-        // offset: const Offset(1.5, 3)
       )
     ]
   );
@@ -170,7 +217,10 @@ class Decorations{
     Color color = const Color.fromRGBO(238, 238, 238, 1), Color errorColor = Colors.red}) => 
   InputDecoration(
     hintText: hint,
-    hintStyle: const TextStyle(color: Colors.black26, fontWeight: FontWeight.w900),
+    hintStyle: TextStyle(
+      color: Prefs.isDarkMode? Colors.white38: Colors.black26,
+      fontWeight: FontWeight.w900
+    ),
     fillColor: color,
     filled: true,
     isDense: true,

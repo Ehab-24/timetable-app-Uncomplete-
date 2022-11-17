@@ -10,7 +10,7 @@ class TimeSlot{
 
   int? id;
   int day, parentId;
-  String title, subtitle, venue;
+  String title, subtitle;
   TimeOfDay startTime, endTime;
 
   TimeSlot({
@@ -19,7 +19,6 @@ class TimeSlot{
     required this.subtitle,
     required this.day,
     required this.parentId,
-    required this.venue,
     required this.startTime,
     required this.endTime,
   });
@@ -30,7 +29,6 @@ class TimeSlot{
     int? parentId,
     String? title,
     String? subtitle,
-    String? venue,
     TimeOfDay? startTime,
     TimeOfDay? endTime,
   })
@@ -40,7 +38,6 @@ class TimeSlot{
     parentId: parentId ?? this.parentId,
     title: title??this.title,
     subtitle: subtitle??this.subtitle,
-    venue:venue??this.venue,
     startTime:startTime??this.startTime,
     endTime:endTime??this.endTime,
   );
@@ -50,7 +47,6 @@ class TimeSlot{
     && this.day == ts.day
     && this.startTime == ts.startTime
     && this.endTime == ts.endTime
-    && this.venue == ts.venue
     && this.subtitle == ts.subtitle;
   }
   
@@ -68,8 +64,7 @@ class TimeSlot{
     
     return TimeSlot(
       day: day,
-      venue:'',
-      title: 'Title',
+      title: '',
       subtitle: '',
       startTime: const TimeOfDay(hour: 12, minute: 0),
       endTime: const TimeOfDay(hour: 12, minute: 0),
@@ -81,7 +76,6 @@ class TimeSlot{
       TimeSlotFields.id: id,
       TimeSlotFields.day: day,
       TimeSlotFields.title: title,
-      TimeSlotFields.venue: venue,
       TimeSlotFields.parentId: parentId,
       TimeSlotFields.subtitle: subtitle,
       TimeSlotFields.startTime: startTime.toString(),
@@ -96,7 +90,6 @@ class TimeSlot{
       endTime: (json[TimeSlotFields.endTime] as String).toTimeOfDay(),
       startTime: (json[TimeSlotFields.startTime] as String).toTimeOfDay(),
       subtitle: json[TimeSlotFields.subtitle] as String,
-      venue: json[TimeSlotFields.venue] as String,
       parentId: json[TimeSlotFields.parentId] as int,
     );   
 

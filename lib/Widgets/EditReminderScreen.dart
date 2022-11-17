@@ -1,7 +1,6 @@
 
 // ignore_for_file: camel_case_types
 
-import 'package:day_night_time_picker/lib/daynight_timepicker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -77,16 +76,31 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
 
               Spaces.vertical60,
 
-              BackgroundTextMini(title: 'Title', color: Prefs.isDarkMode? Colors.white54: Colors.black,),
+              BackgroundTextMini(title: 'Title', color: Prefs.isDarkMode? Colors.white54: Colors.black26,),
 
-              TextFieldBold(
-                initialValue: newremWatch.reminder.title,
-                onChanged: (title) => newremReader.setTitle(title),
+              Stack(
+                children: [
+                  PhysicalModel(
+                    color: Colors.transparent,
+                    shadowColor: colorWatch.shadow,
+                    elevation: 16,
+                    borderRadius: BorderRadius.circular(80),
+                    child: const SizedBox(
+                      width: double.infinity,
+                      height: 104,
+                    ),
+                  ),
+                  TextFieldBold(
+                    initialValue: newremWatch.reminder.title,
+                    maxLength: 10,
+                    onChanged: (title) => newremReader.setTitle(title),
+                  ),
+                ],
               ),
               
               Spaces.vertical40,
 
-              BackgroundTextMini(title: 'Description', color: Prefs.isDarkMode? Colors.white54: Colors.black,),
+              BackgroundTextMini(title: 'Description', color: Prefs.isDarkMode? Colors.white54: Colors.black26,),
 
               TextFieldBold(
                 initialValue: newremWatch.reminder.description,
@@ -161,11 +175,11 @@ class _UpdatedReminderTile extends StatelessWidget {
               children: [
                 Text(
                   remWatch.reminder.title,
-                  style: TextStyles.h1(colorWatch.foreground.withOpacity(0.75)),
+                  style: TextStyles.b1(colorWatch.foreground.withOpacity(0.75)),
                 ),
                 const Spacer(),
                 Text(
-                  DateFormat('EEE, d, y').format(remWatch.reminder.dateTime),
+                  DateFormat('MMM d, y').format(remWatch.reminder.dateTime),
                   style: TextStyles.b3(colorWatch.foreground),
                 ),
               ],
@@ -183,7 +197,7 @@ class _UpdatedReminderTile extends StatelessWidget {
               alignment: Alignment.bottomRight,
               child: Text(
                 DateFormat('K : mm a').format(remWatch.reminder.dateTime),
-                style: TextStyles.toast(colorWatch.foreground, background: colorWatch.onBackground),
+                style: TextStyles.toast(colorWatch.foreground.withOpacity(0.75), background: colorWatch.onBackground),
               ),
             )
           ],
@@ -206,10 +220,12 @@ class _DateAndTimeActions extends StatefulWidget {
 class _DateAndTimeActionsState extends State<_DateAndTimeActions> {
 
   late final NewReminder_pr remReader;
+  late final Color_pr colorReader;
 
   @override
   void initState() {
     remReader = context.read<NewReminder_pr>();
+    colorReader = context.read<Color_pr>();
     super.initState();
   }
 
@@ -235,7 +251,7 @@ class _DateAndTimeActionsState extends State<_DateAndTimeActions> {
           height: height,
           label: 'Date', 
           icon: Icons.date_range_outlined,
-          onTap: _onTapDatePicker,
+          onTap: () => _onTapDatePicker(),
         )
       ],
     );
@@ -244,9 +260,26 @@ class _DateAndTimeActionsState extends State<_DateAndTimeActions> {
   void _onTapDatePicker() async {        
     DateTime? dt = await showDatePicker(
       context: context, 
-      initialDate: remReader.reminder.dateTime, 
+      helpText: 'SELECT DATE',
+      cancelText: 'Cancel',
+      confirmText: "Ok",
+      initialDate: remReader.reminder.dateTime,
       firstDate: DateTime.now(), 
-      lastDate: DateTime(DateTime.now().year + 1),
+      lastDate: DateTime(DateTime.now().year + 2),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Prefs.isDarkMode? Colors.pink.shade400: Colors.pink,
+              onPrimary: colorReader.onBackground, 
+              onSurface: colorReader.foreground, 
+            ),
+            dialogBackgroundColor: colorReader.onBackground
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (dt == null){
@@ -258,29 +291,23 @@ class _DateAndTimeActionsState extends State<_DateAndTimeActions> {
     ));
   }
 //
-  void _onTapTimePicker(){
+  void _onTapTimePicker() async {
     DateTime dt = remReader.reminder.dateTime;
-      
-      Navigator.of(context).push(
-        showPicker(
-          hourLabel: '',
-          minuteLabel: '',
-          accentColor: Colors.pink,
-          value: TimeOfDay(hour: dt.hour, minute: dt.minute),
-          displayHeader: false,
-          onChange: ((td) {
-            remReader.setDateTime(
-              DateTime(
-                dt.year, dt.month, dt.day, td.hour, td.minute
-              ));
-          }),
-          buttonsSpacing: 8,
-          buttonStyle: ElevatedButton.styleFrom(
-            backgroundColor: Colors.pink,
-            foregroundColor: Colors.white,
-          ),
-          cancelButtonStyle: ElevatedButton.styleFrom()
-        )
+    TimeOfDay? response;
+
+    response = await showTimePicker(
+      context: context,
+      helpText: 'Starting Time',
+      cancelText: 'Cancel',
+      confirmText: 'Ok',
+      initialEntryMode: TimePickerEntryMode.dialOnly,
+      initialTime: TimeOfDay(hour: dt.hour, minute: dt.minute),
+    );
+
+    if(response != null){
+      remReader.setDateTime(
+        DateTime(dt.year, dt.month, dt.day, response.hour, response.minute)
       );
+    }
   }
 }

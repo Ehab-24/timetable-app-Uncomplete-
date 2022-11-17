@@ -5,7 +5,6 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:timetable_app/Globals/ColorsAndGradients.dart';
 import 'package:timetable_app/Globals/Decorations.dart';
 import 'package:timetable_app/Globals/Providers.dart';
 import 'package:timetable_app/Globals/Reals.dart';
@@ -57,21 +56,18 @@ class _MainTile extends StatelessWidget {
 
   final bool animate2;
   final TimeTable table;
-  final AssetImage tablePageHeaderImage = const AssetImage('assets/images/blobs_bk2.png');
-
+  
   @override
   Widget build(BuildContext context) {
 
     final Color_pr colorWatch = context.watch<Color_pr>();
     
     return AnimatedOpacity(
-
       opacity: animate2? 1: 0,
       curve: Curves.decelerate,
       duration: Durations.d600,
 
       child: PhysicalModel(
-
         color: Colors.transparent,
         shadowColor: colorWatch.shadow,
         elevation: 16,
@@ -79,16 +75,17 @@ class _MainTile extends StatelessWidget {
 
         child: Material(
           type: MaterialType.transparency,
-          child: InkWell(
 
+          child: InkWell(
             splashColor: colorWatch.splash,
             highlightColor: colorWatch.splash,
             borderRadius: BorderRadius.circular(20),
 
             onTap: (){
+              Provider.of<Day_pr>(context, listen: false).setDay(DateTime.now().weekday - 1);
               var pageRouteBuilder = PageRouteBuilder(
                   pageBuilder: ((context, animation, secondaryAnimation) => 
-                    TimeTableScreen(timeTable: table, headerImage: tablePageHeaderImage)
+                    TimeTableScreen(timeTable: table)
                   ),
                   transitionDuration: Durations.d500,
                   transitionsBuilder: (context, animation, secondaryAnimation, child) => 
@@ -108,16 +105,12 @@ class _MainTile extends StatelessWidget {
             },
 
             child: Ink(
-            
               width: Utils.screenWidthPercentage(context, 0.9),
-          
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               decoration: Decorations.tableTile(colorWatch.onBackground),
             
               child: Column(
-            
                 crossAxisAlignment: CrossAxisAlignment.start,
-            
                 children: [
 
                   Text(

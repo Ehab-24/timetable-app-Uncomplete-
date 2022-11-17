@@ -9,6 +9,7 @@ class Tables{
 
   static String timeTablesTableSchema = '''
   CREATE TABLE $timeTablesTable (
+    ${TimeTableFields.lastModified} ${DataTypes.string},
     ${TimeTableFields.title} ${DataTypes.string},
     ${TimeTableFields.id} ${DataTypes.id}
   )
@@ -29,7 +30,6 @@ class Tables{
     ${TimeSlotFields.day} ${DataTypes.int},
     ${TimeSlotFields.title} ${DataTypes.string},
     ${TimeSlotFields.subtitle} ${DataTypes.string},
-    ${TimeSlotFields.venue} ${DataTypes.string},
     ${TimeSlotFields.startTime} ${DataTypes.string},
     ${TimeSlotFields.endTime} ${DataTypes.string},
     ${TimeSlotFields.parentId} ${DataTypes.int}
@@ -48,12 +48,13 @@ class DataTypes{
 class TimeTableFields{
   static String 
     title = 'title',
-    // color = 'color',
+    lastModified = 'lastmodified',
     id = '_id';
 }
 
 class ReminderFields{
-  static String title = 'title',
+  static String 
+    title = 'title',
     id = '_id',
     dateTime = 'dateTime',
     description = 'description';
@@ -63,7 +64,6 @@ class TimeSlotFields{
   static String
     title = 'title',
     subtitle = 'subtitle',
-    venue = 'venue',
     endTime = 'endTime',
     startTime = 'startTime',
     day = 'day',

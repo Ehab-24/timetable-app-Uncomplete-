@@ -43,10 +43,6 @@ class NewSlot_pr extends ChangeNotifier{
     timeSlot.day = day;
     notifyListeners();
   }
-  void setVenue(String venue){
-    timeSlot.venue = venue;
-    notifyListeners();
-  }
   void setStartTime(TimeOfDay td){
     timeSlot.startTime = td;
     notifyListeners();
@@ -213,8 +209,9 @@ class Table_pr extends ChangeNotifier{
     notifyListeners();
   }
 
-  void updateTable(int index, String title){
+  void updateTable(int index, String title, DateTime lastModified) {
     tables[index].title = title;
+    tables[index].lastModified = lastModified;
     notifyListeners();
   }
 
@@ -245,7 +242,7 @@ class Table_pr extends ChangeNotifier{
 
   void validateTitle(String title){
     for(int i = 0; i < tables.length; i++){
-      if(tables[i].title == title){
+      if(tables[i].title == title && i != currentTableIndex) {
         throw('$title already exists');
       }
     }

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timetable_app/Databases/LocalDatabase.dart';
@@ -22,61 +21,54 @@ class DeleteTableCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final Color_pr colorWatch = context.watch<Color_pr>();
-    
+
     return Dialog(
-
       backgroundColor: Colors.transparent,
-
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: Utils.screenWidthPercentage(context, 0.04)),          
+        margin: EdgeInsets.symmetric(
+            horizontal: Utils.screenWidthPercentage(context, 0.04)),
         decoration: Decorations.decoratedContainer_alt(colorWatch.onBackground),
-        
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-
             IconButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              icon: Icon(Icons.close, size: 28, color: colorWatch.foreground,),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              icon: Icon(
+                Icons.close,
+                size: 28,
+                color: colorWatch.foreground,
+              ),
             ),
-            
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(      
+              child: Column(
                 children: [
-
                   Text(
                     'Item will be deleted\npermanently.',
                     style: TextStyles.b4(colorWatch.foreground),
                     textAlign: TextAlign.center,
                   ),
-
                   Spaces.vertical20,
-                
                   RichText(
                     textAlign: TextAlign.center,
-                    text: TextSpan(
-                      children: [
-
-                        TextSpan(
-                          text: 'Do you want to delete table: ',
-                          style: TextStyles.b2(colorWatch.foreground),
-                        ),
-                        TextSpan(
-                          text: '"${timeTable.title}"',
-                          style: TextStyles.h2light(colorWatch.foreground),
-                        )
-                      ]
-                    ),  
+                    text: TextSpan(children: [
+                      TextSpan(
+                        text: 'Do you want to delete table: ',
+                        style: TextStyles.b2(colorWatch.foreground),
+                      ),
+                      TextSpan(
+                        text: '"${timeTable.title}"',
+                        style: TextStyles.h2light(colorWatch.foreground),
+                      )
+                    ]),
                   ),
-
                   Spaces.vertical40,
-              
                   _DeleteButton(timeTable: timeTable)
                 ],
               ),
@@ -103,7 +95,6 @@ class _DeleteButton extends StatefulWidget {
 }
 
 class _DeleteButtonState extends State<_DeleteButton> {
-
   late final Table_pr tableReader;
 
   @override
@@ -114,16 +105,15 @@ class _DeleteButtonState extends State<_DeleteButton> {
 
   @override
   Widget build(BuildContext context) {
-
     return ElevatedButton(
       onPressed: () {
-        if(tableReader.tables.length == 1){
+        if (tableReader.tables.length == 1) {
           Navigator.of(context).pop();
           Utils.showErrorDialog(context, 'You must have atleast one table.');
           return;
         }
 
-        if(Prefs.homeTable >= currentTableIndex){
+        if (Prefs.homeTable >= currentTableIndex) {
           Prefs.setHomeTable(Prefs.homeTable - 1);
         }
 
@@ -131,9 +121,12 @@ class _DeleteButtonState extends State<_DeleteButton> {
         LocalDatabase.instance.deleteTimeTable(widget.timeTable.id!);
 
         Navigator.of(context).pop();
-        
-        Utils.showSnackBar(context, 'Deleted table: "${widget.timeTable.title}"', seconds: 2);
-      }, 
+
+        Utils.showSnackBar(
+          context, 
+          'Deleted table: "${widget.timeTable.title}"',
+        );
+      },
       child: const Text(
         'Yes',
       ),

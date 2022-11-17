@@ -114,6 +114,7 @@ class _FAB extends StatelessWidget {
             Utils.showCreateTableDialog(context);
           },
           elevation: 0,
+          heroTag: 'add-btn',
           foregroundColor: colorWatch.foreground,
           backgroundColor: colorWatch.onBackground,
           child: const Icon(Icons.playlist_add),
@@ -182,9 +183,6 @@ class _TableScreenAppBarState extends State<TableScreenAppBar>
 
   @override
   void initState() {
-
-    print(Prefs.isDarkMode);
-
     controller = AnimationController(vsync: this, duration: Durations.d800);
 
     animation = SequenceAnimationBuilder()

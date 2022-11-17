@@ -12,14 +12,21 @@ import '../Globals/Decorations.dart';
 import '../Globals/Providers.dart';
 import '../Globals/Utils.dart';
 
-class CreateTableCard extends StatelessWidget {
-  const  CreateTableCard({Key? key,}) : super(key: key);
+class CreateTableCard extends StatefulWidget {
+  const CreateTableCard({Key? key,}) : super(key: key);
+
+  @override
+  State<CreateTableCard> createState() => _CreateTableCardState();
+}
+
+class _CreateTableCardState extends State<CreateTableCard> {
+  
+  String title = '';
 
   @override
   Widget build(BuildContext context) {
 
     final Color_pr colorWatch = context.watch<Color_pr>();
-    String title = '';
 
     return Dialog(
 
@@ -56,28 +63,46 @@ class CreateTableCard extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
       
-                    Spaces.vertical40,
+                    Spaces.vertical60,
                   
                     TextFormField(
+                      maxLength: 10,
+                      buildCounter: (context, {required currentLength, required isFocused, maxLength}) => 
+                        Transform.translate(
+                          offset: const Offset(0, -110),
+                          child: Text(
+                            '$currentLength/$maxLength',
+                            style: TextStyles.toast(
+                              colorWatch.foreground,
+                              background: colorWatch.background
+                            ),
+                          ),
+                        ),
                       onSaved: (value) {
-                        title = value??'';
+                        setState(() {
+                          title = value??'';
+                        });
                       },
                       style: TextStyle(
                         color: colorWatch.foreground,
                       ),
                       initialValue: title,
-                      decoration: Decorations.textFieldBold(hint: 'Title', color: Colors.pink.shade100.withOpacity(0.75)),
-                      validator: (title){ 
+                      decoration: Decorations.textFieldBold(
+                        hint: 'Title', 
+                        color: Prefs.isDarkMode
+                        ? Colors.black12
+                        : Colors.pink.shade100.withOpacity(0.75)
+                      ),
+                      validator: (title) {
                         if(title == null || title == ''){
                           return 'Title must not be empty.';
                         }
+                        return null;
                       }
                     ),
-        
-                    Spaces.vertical40,
 
                     ElevatedButton(
-                      onPressed: () => _onPressed(context, title),
+                      onPressed: () => _onPressed(context),
                       child: const Text('Add',),
                     ),   
                   ],
@@ -90,7 +115,9 @@ class CreateTableCard extends StatelessWidget {
     );
   }
 
-  void _onPressed (BuildContext context, String title) {
+  void _onPressed (BuildContext context) {
+    
+    Utils.formKey.currentState!.save();
     bool isValid = Utils.formKey.currentState!.validate();
     if(!isValid){
       return;
@@ -105,10 +132,10 @@ class CreateTableCard extends StatelessWidget {
       FocusManager.instance.primaryFocus!.unfocus();
     
       LocalDatabase.instance.addTimeTable(
-        TimeTable(title: title)
+        TimeTable(title: title, lastModified: DateTime.now())
       ).then((timeTable) => 
           tableReader.addTable(timeTable)
-      );
+        );
     
       Navigator.of(context).pop();
     }
@@ -118,7 +145,7 @@ class CreateTableCard extends StatelessWidget {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class EditTableCard extends StatefulWidget {
   const  EditTableCard({
@@ -130,130 +157,132 @@ class EditTableCard extends StatefulWidget {
 }
 
 class _EditTableCardState extends State<EditTableCard> {
+
+  late String title;
+
+  @override
+  void initState() {
+    title = context.read<Table_pr>().tables[currentTableIndex].title;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
 
     final Color_pr colorWatch = context.watch<Color_pr>();
-    final Table_pr tableWatch = context.watch<Table_pr>();
-    String title = tableWatch.tables[currentTableIndex].title;
 
     return Dialog(
 
       backgroundColor: Colors.transparent,
 
-      child: Stack(
+      child: Container(
 
-        clipBehavior: Clip.none,
-        alignment: Alignment.topCenter,
-
-        children: [
-
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: Utils.screenWidthPercentage(context, 0.04)),
-            
-            padding: const EdgeInsets.fromLTRB(16, 32, 16, 12),
-          
-            decoration: Decorations.popUpCard,
-            
-            child: Form(
-              key: Utils.formKey,
-              child: Column(
-                      
-                mainAxisSize: MainAxisSize.min,
-                children: [
-            
-                  Spaces.vertical40,
-
-                  Text(
-                    'Change title of Time Table.',
-                    style: TextStyles.b1(colorWatch.foreground),
-                  ),
-
-                  Spaces.vertical40,
-                
-                  TextFormField(
-                    
-                    initialValue: title,
-                    decoration: Decorations.titleTextField,
-                    
-                    onSaved: (value) {
-                      title = value??'';
-                    },
-                    style: TextStyle(
-                      color: colorWatch.foreground,
-                    ),
-                    validator: (title){ 
-                      if(title == null || title == ''){
-                        return 'Title must not be empty.';
-                      }
-                      return null;
-                    }
-                    ),
-            
-                  Spaces.vertical40,
+        margin: EdgeInsets.symmetric(horizontal: Utils.screenWidthPercentage(context, 0.04)),  
+        decoration: Decorations.decoratedContainer_alt(colorWatch.onBackground),
+        
+        child: Form(
+          key: Utils.formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children:[
               
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      
-                      OutlinedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          'Cancel',
-                        ),
-                      ),
-
-                      Spaces.horizontal20,
-
-                      ElevatedButton(
-                        onPressed: () async {
-                          try{
-                            Table_pr tableReader = context.read<Table_pr>();
-
-                            Utils.formKey.currentState!.validate();
-                            Utils.formKey.currentState!.save();
-
-                            tableReader.validateTitle(title);
-
-                            //Update in provider and database.
-                            tableReader.updateTable(currentTableIndex, title);                               
-                            await LocalDatabase.instance.updateTimeTable(
-                              tableReader.tables[currentTableIndex]
-                            );
-                          
-                            if(mounted){
-                              Navigator.of(context).pop();
-                            }
-                          }
-                          catch (e){
-                            Utils.showErrorDialog(context, e.toString());
-                          }
-                        },
-                        child: const Text(
-                          'Save',
-                        ),
-                      ),                      
-                    ],
-                  )
-                ],
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                icon: Icon(Icons.close, color: colorWatch.foreground, size: 28,),
               ),
-            ),
+
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Enter the new title.',
+                      style: TextStyles.h2light(colorWatch.foreground),
+                      textAlign: TextAlign.center,
+                    ),
+      
+                    Spaces.vertical60,
+                  
+                    TextFormField(
+                      maxLength: 10,
+                      buildCounter: (context, {required currentLength, required isFocused, maxLength}) => 
+                        Transform.translate(
+                          offset: const Offset(0, -110),
+                          child: Text(
+                            '$currentLength/$maxLength',
+                            style: TextStyles.toast(
+                              colorWatch.foreground,
+                              background: colorWatch.background
+                            ),
+                          ),
+                        )
+                      ,
+                      onChanged: (value) {
+                        setState(() {
+                          title = value;
+                        });
+                      },
+                      style: TextStyle(
+                        color: colorWatch.foreground,
+                      ),
+                      initialValue: title,
+                      decoration: Decorations.textFieldBold(
+                        hint: 'Title', 
+                        color: Prefs.isDarkMode
+                        ? Colors.black12
+                        : Colors.pink.shade100.withOpacity(0.75)
+                      ),
+                      validator: (title){ 
+                        if(title == null || title == ''){
+                          return 'Title must not be empty.';
+                        }
+                      }
+                    ),
+                    
+                    ElevatedButton(
+                      onPressed: () => _onPressed(context),
+                      child: const Text('Save',),
+                    ),   
+                  ],
+                ),
+              ),
+            ],
           ),
-          
-          //Circular Indicator
-          const Positioned(
-            top: -30,
-            child: CircleAvatar(
-              foregroundColor: Color.fromRGBO(238, 238, 238, 1),
-              backgroundColor: Color.fromRGBO(0, 176, 255, 1),
-              radius: 30,
-              child: Icon(Icons.edit_note, size: 30,),
-            ),
-          )
-        ],
+        ),
       ),
     );
+  }
+
+  void _onPressed (BuildContext context) {
+
+    bool isValid = Utils.formKey.currentState!.validate();
+    
+    if(!isValid){
+      return;
+    }
+    try{
+      Table_pr tableReader = context.read<Table_pr>();
+    
+      tableReader.validateTitle(title);
+
+      FocusManager.instance.primaryFocus!.unfocus();
+    
+      //No need to await it.
+      LocalDatabase.instance.updateTimeTable(
+        tableReader.tables[currentTableIndex].copyWith(title: title, lastModified: DateTime.now())
+      );
+      tableReader.updateTable(currentTableIndex, title, DateTime.now());
+    
+      Navigator.of(context).pop();
+    }
+    catch (e){
+      Utils.showErrorDialog(context, e.toString());
+    }
   }
 }
